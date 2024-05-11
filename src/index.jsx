@@ -1,20 +1,12 @@
-import { createRoot } from 'react-dom/client'; 
+import { createRoot } from "react-dom/client";
+import { MainView } from "./components/main-view/main-view";
 
-import "./index.scss"; 
+import "./index.scss";
 
-// Main Component
-const MyFlixApplication = () => {
-    return (
-        <div className="my-flix">
-            <div>Good morning</div>
-        </div>
-    );
+const App = () => {
+    return <MainView />;
 };
 
-// Finds the root of app 
-const container = document.querySelector("#root"); 
-const root = createRoot(container); 
-
-// Tell React to Render app in the root Dom element
-root.render(<MyFlixApplication />); 
-
+const container = document.querySelector("#root");
+const root = createRoot(container);
+root.render(<App />);
