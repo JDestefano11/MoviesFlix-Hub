@@ -5,7 +5,7 @@ export const MainView = () => {
     const [movies, setMovies] = useState([
         { id: 1, title: "Jurassic Park" },
         { id: 2, title: "The Dark Night" },
-        { id: 3, title: "Schindler/'s List" },
+        { id: 3, title: "Schindler\'s List" },
         { id: 4, title: "Inception" },
         { id: 5, title: "The Shawshank Redemption" },
         { id: 6, title: "Forest Gump" },
