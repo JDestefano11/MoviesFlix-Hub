@@ -53,8 +53,13 @@ export const MainView = () => {
 
     const [selectedMovie, setSelectedMovie] = useState(null);
 
+    // Event listner
+    const handleMovieClick = (movie) => {
+        setSelectedMovie(movie);
+    };
+
     if (selectedMovie) {
-        return <MovieView movieData={movie} />
+        return <MovieView movie={selectedMovie} />
     }
 
     if (movies.length === 0) {
@@ -63,7 +68,13 @@ export const MainView = () => {
     return (
         <div>
             {movies.map((movie) => (
-                <MovieCard key={movie.id} movieData={movie} />
+                <MovieCard
+                    key={movie.id}
+                    movieData={movie}
+                    onMovieClick={(newSelectedMovie) => {
+                        setSelectedMovie(newSelectedMovie);
+                    }}
+                />
             ))}
         </div>
     );
