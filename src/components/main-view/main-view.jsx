@@ -54,16 +54,15 @@ export const MainView = () => {
     const [selectedMovie, setSelectedMovie] = useState(null);
 
     const handleMovieClick = (movieData) => {
-        console.log("Clicked on movie:", movieData);   // Debug
         setSelectedMovie(movieData);
     };
 
     console.log("Movies:", movies); // Log the movies array
 
     if (selectedMovie) {
-        console.log("Selected movie:", selectedMovie);   // Debig
-
-        return <MovieView movieData={selectedMovie} />;
+        return (<MovieView movieData={selectedMovie} onBackClick={() => setSelectedMovie
+            (null)} />
+        );
     }
 
     if (movies.length === 0) {
