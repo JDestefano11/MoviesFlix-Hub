@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { MovieCard } from "../movie-card/movie-card";
-import { MovieView } from "../movie-view/movie-view";
+import React, { useState } from 'react';
+import { MovieCard } from '../movie-card/movie-card';
+import { MovieView } from '../movie-view/movie-view'
 
 export const MainView = () => {
     const [movies, setMovies] = useState([
@@ -53,27 +53,30 @@ export const MainView = () => {
 
     const [selectedMovie, setSelectedMovie] = useState(null);
 
-    // Event listner
-    const handleMovieClick = (movie) => {
-        setSelectedMovie(movie);
+    const handleMovieClick = (movieData) => {
+        console.log("Clicked on movie:", movieData);   // Debug
+        setSelectedMovie(movieData);
     };
 
+    console.log("Movies:", movies); // Log the movies array
+
     if (selectedMovie) {
-        return <MovieView movie={selectedMovie} />
+        console.log("Selected movie:", selectedMovie);   // Debig
+
+        return <MovieView movieData={selectedMovie} />;
     }
 
     if (movies.length === 0) {
         return <div>The movie list is empty</div>;
     }
+
     return (
         <div>
-            {movies.map((movie) => (
+            {movies.map((movieData) => (
                 <MovieCard
-                    key={movie.id}
-                    movieData={movie}
-                    onMovieClick={(newSelectedMovie) => {
-                        setSelectedMovie(newSelectedMovie);
-                    }}
+                    key={movieData.id}
+                    movieData={movieData}
+                    onClick={handleMovieClick}
                 />
             ))}
         </div>
