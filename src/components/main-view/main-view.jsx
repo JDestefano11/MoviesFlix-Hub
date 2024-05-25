@@ -12,23 +12,22 @@ export const MainView = () => {
         fetch("https://movies-flixhub-b3cf1708f9a6.herokuapp.com/movies")
             .then(response => response.json())
             .then((data) => {
-                const moviesFromApi = data.map((doc) => {
-                    return {
-                        id: doc.key,
-                        title: doc.title,
-                        description: doc.description,
-                        genre: {
-                            name: doc.genre.name,
-                            description: doc.genre.description
-                        },
-                        director: {
-                            name: doc.director.name,
-                            occupation: doc.director.occupation,
-                            birthdate: doc.director.birthdate,
-                            birthplace: doc.director.birthplace
-                        }
-                    };
-                });
+                const moviesFromApi = data.map((movie) => ({
+                    id: movie._id,
+                    title: movie.Title,
+                    description: movie.Description,
+                    genre: {
+                        name: movie.Genre.Name,
+                        description: movie.Genre.Description
+                    },
+                    director: {
+                        name: movie.Director.Name,
+                        occupation: movie.Director.Occupation,
+                        birthdate: movie.Director.BirthDate,
+                        birthplace: movie.Director.BirthPlace,
+                        bio: movie.Director.Bio
+                    }
+                }));
                 setMovies(moviesFromApi);
             })
             .catch((error) => {
