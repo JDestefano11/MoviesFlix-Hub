@@ -1,83 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
-import { MovieView } from '../movie-view/movie-view'
+import { MovieView } from '../movie-view/movie-view';
+import { LoginView } from '../login-view/login-view';
 
 export const MainView = () => {
-    const [movies, setMovies] = useState([
-        {
-            id: 1,
-            title: "Jurassic Park",
-            description: "An adventurous theme park featuring cloned dinosaurs.",
-            genre: {
-                name: "Adventure",
-                description: "Adventure films are exciting stories, with new experiences or exotic locales, where the protagonist faces physical, mental, or emotional challenges."
-            },
-            director: {
-                name: "Steven Spielberg",
-                occupation: "American filmmaker",
-                birthdate: "1946-12-18",
-                birthplace: "Cincinnati, Ohio, USA"
-            }
-        },
-        {
-            id: 2,
-            title: "The Dark Night",
-            description: "Batman battles against the Joker to save Gotham City",
-            genre: {
-                name: "Action",
-                description: "Action films usually feature high-energy, fast-paced sequences with physical feats, fights, chases, and explosions.",
-            },
-            director: {
-                name: "Christopher Nolan",
-                occupation: "British-American filmmaker",
-                birthdate: "1970-07-30",
-                birthplace: "London, England, UK"
-            }
-        },
-        {
-            id: 3,
-            title: "Schindler\'s List",
-            description: "A powerful story about a German businessman who saved Jewish refugees during the Holocaust",
-            genre: {
-                name: "Drama",
-                description: "Drama films are narrative works that present realistic characters and settings, focusing on emotional themes.",
-                director: {
-                    name: "Steven Spielberg",
-                    occupation: "American filmmaker",
-                    birthdate: "1946-12-18",
-                    birthplace: "Cincinnati, Ohio, USA"
-                }
-            },
-        }
-    ]);
-
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
 
-    const handleMovieClick = (movieData) => {
-        setSelectedMovie(movieData);
+    const handleLogin = (userData, authToken) => {
+        setUser(userData);
+        setToken(authToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', authToken);
     };
 
-    console.log("Movies:", movies); // Log the movies array
+    const handleLogout = () => {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+    };
 
-    if (selectedMovie) {
-        return (<MovieView movieData={selectedMovie} onBackClick={() => setSelectedMovie
-            (null)} />
-        );
-    }
+    useEffect(() => {
+        if (!token) return;
 
-    if (movies.length === 0) {
-        return <div>The movie list is empty</div>;
-    }
+        fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setMovies(data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    }, [token]);
 
     return (
         <div>
-            {movies.map((movieData) => (
-                <MovieCard
-                    key={movieData.id}
-                    movieData={movieData}
-                    onClick={handleMovieClick}
-                />
-            ))}
+            {!user ? (
+                <LoginView onLoggedIn={handleLogin} />
+            ) : (
+                <div>
+                    <button onClick={handleLogout}>Logout</button>
+                    {selectedMovie ? (
+                        <MovieView
+                            movie={selectedMovie}
+                            onBackClick={() => setSelectedMovie(null)}
+                        />
+                    ) : (
+                        <div>
+                            {movies.length === 0 ? (
+                                <div>The movie list is empty</div>
+                            ) : (
+                                movies.map((movie) => (
+                                    <MovieCard
+                                        key={movie.id}
+                                        movie={movie}
+                                        onMovieClick={(movie) =>
+                                            setSelectedMovie(movie)
+                                        }
+                                    />
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
