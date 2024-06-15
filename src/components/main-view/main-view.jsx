@@ -9,11 +9,10 @@ export const MainView = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [movies, setMovies] = useState([]);
-
-    const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [showSignup, setShowSignup] = useState(false);
     const [isLoadingMovies, setLoadingMovies] = useState(false);
+
 
     useEffect(() => {
         // Check if user is already logged in
@@ -62,7 +61,7 @@ export const MainView = () => {
 
     const handleMovieClick = (movieData) => {
         setSelectedMovie(movieData);
-    }; 
+    };
 
 
     const handleLogout = () => {
