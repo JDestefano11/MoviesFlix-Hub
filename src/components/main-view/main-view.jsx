@@ -1,12 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
-import { MovieView } from '../movie-view/movie-view'
+import { MovieView } from '../movie-view/movie-view';
+import { LoginView } from '../login-view/login-view';
+import { SignupView } from '../signup-view/signup-view';
 
 
 export const MainView = () => {
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
+    const [token, setToken] = useState(localStorage.getItem('token'));
     const [movies, setMovies] = useState([]);
 
+    const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
+    const [showSignup, setShowSignup] = useState(false);
+    const [isLoadingMovies, setLoadingMovies] = useState(false);
+
+    useEffect(() => {
+        // Check if user is already logged in
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
+
+    const handleLogin = (userData, authToken) => {
+        setUser(userData);
+        setToken(authToken);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('token', authToken);
+        setShowSignup(false); // Hide SignupView after successful login
+        fetchMovies(authToken); // Fetch movies after successful login
+    };
 
     useEffect(() => {
         fetch("https://movies-flixhub-b3cf1708f9a6.herokuapp.com/movies")
@@ -38,29 +62,74 @@ export const MainView = () => {
 
     const handleMovieClick = (movieData) => {
         setSelectedMovie(movieData);
-    }; 8
+    }; 
 
-    console.log("Movies:", movies); // Log the movies array
 
-    if (selectedMovie) {
-        return (<MovieView movieData={selectedMovie} onBackClick={() => setSelectedMovie
-            (null)} />
-        );
-    }
+    const handleLogout = () => {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        setShowSignup(true); // Show SignupView after logout
+    };
 
-    if (movies.length === 0) {
-        return <div>The movie list is empty</div>;
-    }
+    const handleSignup = (signupData, authToken) => {
+        alert('Signup successful!');
+        setUser(signupData);
+        setShowSignup(false);
+        fetchMovies(authToken); // Fetch movies after successful signup
+    };
+
+    const fetchMovies = (authToken) => {
+        setLoadingMovies(true); // Set loading state
+        fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
+            headers: { Authorization: `Bearer ${authToken}` },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setMovies(data);
+                setLoadingMovies(false); // Clear loading state
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setLoadingMovies(false); // Clear loading state on error
+            });
+    };
 
     return (
         <div>
-            {movies.map((movieData) => (
-                <MovieCard
-                    key={movieData.id}
-                    movieData={movieData}
-                    onClick={handleMovieClick}
-                />
-            ))}
+            {!user ? (
+                <>
+                    <LoginView onLoggedIn={handleLogin} />
+                    <SignupView onSignup={(userData, authToken) => handleSignup(userData, authToken)} />
+                </>
+            ) : (
+                <div>
+                    <button onClick={handleLogout}>Logout</button>
+                    {selectedMovie ? (
+                        <MovieView
+                            movie={selectedMovie}
+                            onBackClick={() => setSelectedMovie(null)}
+                        />
+                    ) : (
+                        <div>
+                            {isLoadingMovies ? (
+                                <div>Loading...</div>
+                            ) : movies.length === 0 ? (
+                                <div>The movie list is empty</div>
+                            ) : (
+                                movies.map((movie) => (
+                                    <MovieCard
+                                        key={movie.id}
+                                        movie={movie}
+                                        onMovieClick={(movie) => setSelectedMovie(movie)}
+                                    />
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

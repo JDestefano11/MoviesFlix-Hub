@@ -1,26 +1,25 @@
-export const MovieView = ({ movieData, onBackClick }) => {
+export const MovieView = ({ movie, onBackClick }) => {
     return (
         <div>
             <div>
-                <h2>{movieData.title}</h2>
-                <p><strong>Description:</strong> {movieData.description}</p>
-                {movieData.genre && (
+                <h2>{movie.Title}</h2>
+                <p><strong>Description:</strong> {movie.Description}</p>
+                {movie.Genre && (
                     <div>
-                        <p><strong>Genre:</strong> {movieData.genre.name}</p>
-                        <p><strong>Genre Description:</strong> {movieData.genre.description}</p>
+                        <p><strong>Genre:</strong> {movie.Genre.Name}</p>
+                        <p><strong>Genre Description:</strong> {movie.Genre.Description}</p>
                     </div>
                 )}
-                {movieData.director && (
+                {movie.Director && (
                     <div>
-                        <p><strong>Director:</strong> {movieData.director.name}</p>
-                        <p><strong>Director's Occupation:</strong> {movieData.director.occupation}</p>
-                        <p><strong>Director's Birthdate:</strong> {movieData.director.birthdate}</p>
-                        <p><strong>Director's Birthplace:</strong> {movieData.director.birthplace}</p>
+                        <p><strong>Director:</strong> {movie.Director.Name}</p>
+                        <p><strong>Director's Occupation:</strong> {movie.Director.Occupation}</p>
+                        <p><strong>Director's Birthdate:</strong> {new Date(movie.Director.BirthDate).toLocaleDateString()}</p>
+                        <p><strong>Director's Birthplace:</strong> {movie.Director.BirthPlace}</p>
                     </div>
                 )}
             </div>
             <button onClick={onBackClick}>Back</button>
         </div>
-
     );
 }
