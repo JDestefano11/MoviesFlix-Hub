@@ -25,6 +25,7 @@ export const MainView = () => {
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', authToken);
         setShowSignup(false); // Hide SignupView after successful login
+        fetchMovies(authToken); // Fetch movies after successful login
     };
 
     const handleLogout = () => {
@@ -35,33 +36,32 @@ export const MainView = () => {
         setShowSignup(true); // Show SignupView after logout
     };
 
-    const handleSignup = (signupData) => {
+    const handleSignup = (signupData, authToken) => {
         alert('Signup successful!');
         setUser(signupData);
         setShowSignup(false);
+        fetchMovies(authToken); // Fetch movies after successful signup
     };
 
-    useEffect(() => {
-        if (token) {
-            fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
-                headers: { Authorization: `Bearer ${token}` },
+    const fetchMovies = (authToken) => {
+        fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
+            headers: { Authorization: `Bearer ${authToken}` },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setMovies(data);
             })
-                .then((response) => response.json())
-                .then((data) => {
-                    setMovies(data);
-                })
-                .catch((error) => {
-                    console.error('Error fetching data:', error);
-                });
-        }
-    }, [token]);
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+    };
 
     return (
         <div>
             {!user ? (
                 <>
                     <LoginView onLoggedIn={handleLogin} />
-                    <SignupView onSignup={handleSignup} />
+                    <SignupView onSignup={(userData, authToken) => handleSignup(userData, authToken)} />
                 </>
             ) : (
                 <div>
