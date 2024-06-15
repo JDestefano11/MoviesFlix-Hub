@@ -9,7 +9,15 @@ export const MainView = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
-    const [showSignup, setShowSignup] = useState(!user); // Show SignupView if user is not logged in
+    const [showSignup, setShowSignup] = useState(false);
+
+    useEffect(() => {
+        // Check if user is already logged in
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            setUser(storedUser);
+        }
+    }, []);
 
     const handleLogin = (userData, authToken) => {
         setUser(userData);
@@ -28,27 +36,24 @@ export const MainView = () => {
     };
 
     const handleSignup = (signupData) => {
-
-        console.log('Signup data:', signupData);
-
         alert('Signup successful!');
         setUser(signupData);
         setShowSignup(false);
     };
 
     useEffect(() => {
-        if (!token) return;
-
-        fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
-            headers: { Authorization: `Bearer ${token}` },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setMovies(data);
+        if (token) {
+            fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
+                headers: { Authorization: `Bearer ${token}` },
             })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    setMovies(data);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                });
+        }
     }, [token]);
 
     return (
@@ -56,7 +61,7 @@ export const MainView = () => {
             {!user ? (
                 <>
                     <LoginView onLoggedIn={handleLogin} />
-                    {showSignup && <SignupView onSignup={handleSignup} />}
+                    <SignupView onSignup={handleSignup} />
                 </>
             ) : (
                 <div>
