@@ -10,6 +10,7 @@ export const MainView = () => {
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
     const [showSignup, setShowSignup] = useState(false);
+    const [isLoadingMovies, setLoadingMovies] = useState(false);
 
     useEffect(() => {
         // Check if user is already logged in
@@ -44,15 +45,18 @@ export const MainView = () => {
     };
 
     const fetchMovies = (authToken) => {
+        setLoadingMovies(true); // Set loading state
         fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
             headers: { Authorization: `Bearer ${authToken}` },
         })
             .then((response) => response.json())
             .then((data) => {
                 setMovies(data);
+                setLoadingMovies(false); // Clear loading state
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
+                setLoadingMovies(false); // Clear loading state on error
             });
     };
 
@@ -73,7 +77,9 @@ export const MainView = () => {
                         />
                     ) : (
                         <div>
-                            {movies.length === 0 ? (
+                            {isLoadingMovies ? (
+                                <div>Loading...</div>
+                            ) : movies.length === 0 ? (
                                 <div>The movie list is empty</div>
                             ) : (
                                 movies.map((movie) => (
