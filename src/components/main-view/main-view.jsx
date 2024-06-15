@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
 import { LoginView } from '../login-view/login-view';
+import { SignupView } from '../signup-view/signup-view';
 
 export const MainView = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
+    const [showSignup, setShowSignup] = useState(!user); // Show SignupView if user is not logged in
 
     const handleLogin = (userData, authToken) => {
         setUser(userData);
         setToken(authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', authToken);
+        setShowSignup(false); // Hide SignupView after successful login
     };
 
     const handleLogout = () => {
@@ -21,6 +24,16 @@ export const MainView = () => {
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        setShowSignup(true); // Show SignupView after logout
+    };
+
+    const handleSignup = (signupData) => {
+
+        console.log('Signup data:', signupData);
+
+        alert('Signup successful!');
+        setUser(signupData);
+        setShowSignup(false);
     };
 
     useEffect(() => {
@@ -41,7 +54,10 @@ export const MainView = () => {
     return (
         <div>
             {!user ? (
-                <LoginView onLoggedIn={handleLogin} />
+                <>
+                    <LoginView onLoggedIn={handleLogin} />
+                    {showSignup && <SignupView onSignup={handleSignup} />}
+                </>
             ) : (
                 <div>
                     <button onClick={handleLogout}>Logout</button>
@@ -59,9 +75,7 @@ export const MainView = () => {
                                     <MovieCard
                                         key={movie.id}
                                         movie={movie}
-                                        onMovieClick={(movie) =>
-                                            setSelectedMovie(movie)
-                                        }
+                                        onMovieClick={(movie) => setSelectedMovie(movie)}
                                     />
                                 ))
                             )}
