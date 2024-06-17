@@ -4,15 +4,23 @@
 
     .card {
         width: 18rem;
+        margin: 0 auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        @media (max-width: 768px) {
+            width: calc(100% - 20px);
+            max-width: 300px;
+         
+        }
 
         .card-img-top {
             height: 300px;
-            /* Adjust as needed */
             object-fit: cover;
         }
 
         .card-body {
             background-color: #f8f9fa;
+            padding: 1rem;
         }
 
         .card-title {
