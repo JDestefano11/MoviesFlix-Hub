@@ -1,0 +1,38 @@
+/* login.scss */
+
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+    margin-bottom: 15px;
+}
+
+.login-button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+@media (max-width: 576px) {
+    .login-form {
+        padding: 10px;
+    }
+
+    .form-control {
+        margin-bottom: 10px;
+    }
+
+    .login-button {
+        margin-top: 15px;
+    }
+}
