@@ -3,6 +3,7 @@ import { MovieCard } from '../movie-card/movie-card';
 import { MovieView } from '../movie-view/movie-view';
 import { LoginView } from '../login-view/login-view';
 import { SignupView } from '../signup-view/signup-view';
+import { Row, Col } from 'react-bootstrap';
 
 
 export const MainView = () => {
@@ -96,39 +97,46 @@ export const MainView = () => {
     };
 
     return (
-        <div>
-            {!user ? (
-                <>
-                    <LoginView onLoggedIn={handleLogin} />
-                    <SignupView onSignup={(userData, authToken) => handleSignup(userData, authToken)} />
-                </>
-            ) : (
-                <div>
-                    <button onClick={handleLogout}>Logout</button>
-                    {selectedMovie ? (
-                        <MovieView
-                            movie={selectedMovie}
-                            onBackClick={() => setSelectedMovie(null)}
-                        />
-                    ) : (
-                        <div>
-                            {isLoadingMovies ? (
-                                <div>Loading...</div>
-                            ) : movies.length === 0 ? (
-                                <div>The movie list is empty</div>
-                            ) : (
-                                movies.map((movie) => (
-                                    <MovieCard
-                                        key={movie.id}
-                                        movie={movie}
-                                        onMovieClick={(movie) => setSelectedMovie(movie)}
-                                    />
-                                ))
-                            )}
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+        <Row className="justify-content-md-center">
+            <div>
+                {!user ? (
+                    <>
+                        <LoginView onLoggedIn={handleLogin} />
+                        <SignupView onSignup={(userData, authToken) => handleSignup(userData, authToken)} />
+                    </>
+                ) : (
+                    <div>
+                        <button onClick={handleLogout}>Logout</button>
+                        {selectedMovie ? (
+
+                            <Col md={8} style={{ border: "1px solid black" }}>
+                                <MovieView
+                                    style={{ border: "1px solid green" }}
+                                    movie={selectedMovie}
+                                    onBackClick={() => setSelectedMovie(null)}
+                                />
+                            </Col>
+
+                        ) : (
+                            <div>
+                                {isLoadingMovies ? (
+                                    <div>Loading...</div>
+                                ) : movies.length === 0 ? (
+                                    <div>The movie list is empty</div>
+                                ) : (
+                                    movies.map((movie) => (
+                                        <MovieCard
+                                            key={movie.id}
+                                            movie={movie}
+                                            onMovieClick={(movie) => setSelectedMovie(movie)}
+                                        />
+                                    ))
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </Row>
     );
 };
