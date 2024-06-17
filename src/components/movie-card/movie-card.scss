@@ -1,0 +1,40 @@
+.movie-card {
+    cursor: pointer;
+    margin-bottom: 20px;
+
+    .card {
+        width: 18rem;
+
+        .card-img-top {
+            height: 300px;
+            /* Adjust as needed */
+            object-fit: cover;
+        }
+
+        .card-body {
+            background-color: #f8f9fa;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .btn-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+
+            &:hover {
+                color: #0056b3;
+            }
+        }
+    }
+}
