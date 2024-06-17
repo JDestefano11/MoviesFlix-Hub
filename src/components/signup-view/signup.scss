@@ -1,26 +1,73 @@
-
-
 .signup-container {
-    padding: 20px;
-    background-color: #f8f9fa;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
+    text-align: center;
 }
 
 .signup-form {
-    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-    h2 {
-        margin-bottom: 20px;
+.signup-form h2 {
+    color: #0056b3;
+    margin-bottom: 20px;
+}
+
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    margin-bottom: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
     }
 
-    .form-group {
-        text-align: left;
+    &:focus,
+    &.focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
     }
 
-    .btn-primary {
-        width: 100%;
+    &:disabled,
+    &:disabled:hover {
+        background-color: #007bff;
+        border-color: #007bff;
+        opacity: 0.65;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    .show>&.dropdown-toggle {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+}
+
+.btn-link {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: #0056b3;
     }
 }
