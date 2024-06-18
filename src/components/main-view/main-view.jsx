@@ -5,7 +5,6 @@ import { LoginView } from '../login-view/login-view';
 import { SignupView } from '../signup-view/signup-view';
 import { Row, Col } from 'react-bootstrap';
 
-
 export const MainView = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [token, setToken] = useState(localStorage.getItem('token'));
@@ -14,86 +13,58 @@ export const MainView = () => {
     const [showSignup, setShowSignup] = useState(false);
     const [isLoadingMovies, setLoadingMovies] = useState(false);
 
-
     useEffect(() => {
-        // Check if user is already logged in
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (storedUser) {
             setUser(storedUser);
         }
     }, []);
 
-    const handleLogin = (userData, authToken) => {
+    const fetchMovies = async () => {
+        setLoadingMovies(true);
+        try {
+            const response = await fetch('https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                if (response.status === 401) {
+                    await refreshToken();
+                    fetchMovies();
+                } else {
+                    throw new Error('Failed to fetch movies');
+                }
+            } else {
+                const data = await response.json();
+                setMovies(data);
+                setLoadingMovies(false);
+            }
+        } catch (error) {
+            console.error('Error fetching movies:', error);
+            setLoadingMovies(false);
+        }
+    };
+
+    const handleLogin = async (userData, authToken) => {
         setUser(userData);
         setToken(authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', authToken);
-        setShowSignup(false); // Hide SignupView after successful login
-        fetchMovies(authToken); // Fetch movies after successful login
+        setShowSignup(false);
+        fetchMovies();
     };
-
-    useEffect(() => {
-        fetch("https://movies-flixhub-b3cf1708f9a6.herokuapp.com/movies")
-            .then(response => response.json())
-            .then((data) => {
-                const moviesFromApi = data.map((movie) => ({
-                    id: movie._id,
-                    title: movie.Title,
-                    description: movie.Description,
-                    genre: {
-                        name: movie.Genre.Name,
-                        description: movie.Genre.Description
-                    },
-                    director: {
-                        name: movie.Director.Name,
-                        occupation: movie.Director.Occupation,
-                        birthdate: movie.Director.BirthDate,
-                        birthplace: movie.Director.BirthPlace,
-                        bio: movie.Director.Bio
-                    }
-                }));
-                setMovies(moviesFromApi);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-            });
-    }, []);
-
-
-    const handleMovieClick = (movieData) => {
-        setSelectedMovie(movieData);
-    };
-
 
     const handleLogout = () => {
         setUser(null);
         setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-        setShowSignup(true); // Show SignupView after logout
+        setShowSignup(true);
     };
 
-    const handleSignup = (signupData, authToken) => {
-        alert('Signup successful!');
-        setUser(signupData);
-        setShowSignup(false);
-        fetchMovies(authToken); // Fetch movies after successful signup
-    };
-
-    const fetchMovies = (authToken) => {
-        setLoadingMovies(true); // Set loading state
-        fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
-            headers: { Authorization: `Bearer ${authToken}` },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setMovies(data);
-                setLoadingMovies(false); // Clear loading state
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setLoadingMovies(false); // Clear loading state on error
-            });
+    const handleMovieClick = (movieData) => {
+        setSelectedMovie(movieData);
     };
 
     return (
@@ -102,21 +73,18 @@ export const MainView = () => {
                 {!user ? (
                     <>
                         <LoginView onLoggedIn={handleLogin} />
-                        <SignupView onSignup={(userData, authToken) => handleSignup(userData, authToken)} />
+                        <SignupView onSignup={(userData, authToken) => handleLogin(userData, authToken)} />
                     </>
                 ) : (
                     <div>
                         <button onClick={handleLogout}>Logout</button>
                         {selectedMovie ? (
-
                             <Col md={8} style={{ border: "1px solid black" }}>
                                 <MovieView
-                                    style={{ border: "1px solid green" }}
                                     movie={selectedMovie}
                                     onBackClick={() => setSelectedMovie(null)}
                                 />
                             </Col>
-
                         ) : (
                             <div>
                                 {isLoadingMovies ? (

@@ -1,32 +1,46 @@
-
 import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import './login.scss';
 
 export const LoginView = ({ onLoggedIn }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Form validation
         if (!username || !password) {
-            alert('Please enter both username and password.');
+            setError('Please enter both username and password.');
             return;
         }
 
-        const user = {
-            username: username,
-            password: password
-        };
-        const token = 'dummyToken';
+        try {
+            const response = await fetch('https://moviesflix-hub-fca46ebf9888.herokuapp.com/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        // Store user data and token in localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
+            const data = await response.json();
 
-        onLoggedIn(user, token);
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
+
+            const { token } = data;
+
+            // Store user and token in local storage
+            localStorage.setItem('user', JSON.stringify({ username }));
+            localStorage.setItem('token', token);
+
+            // Notify parent component about successful login
+            onLoggedIn({ username }, token);
+        } catch (error) {
+            setError('Login failed. Please try again.');
+            console.error('Login error:', error);
+        }
     };
 
     return (
@@ -52,6 +66,8 @@ export const LoginView = ({ onLoggedIn }) => {
                     required
                 />
             </Form.Group>
+
+            {error && <div className="error-message">{error}</div>}
 
             <Button variant="primary" type="submit" className="login-button">
                 Login
