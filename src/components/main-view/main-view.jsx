@@ -7,10 +7,8 @@ import { Row, Col } from 'react-bootstrap';
 
 export const MainView = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
-    const [token, setToken] = useState(localStorage.getItem('token'));
     const [movies, setMovies] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState(null);
-    const [showSignup, setShowSignup] = useState(false);
     const [isLoadingMovies, setLoadingMovies] = useState(false);
 
     useEffect(() => {
@@ -25,42 +23,35 @@ export const MainView = () => {
         try {
             const response = await fetch('https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies', {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             if (!response.ok) {
-                if (response.status === 401) {
-                    await refreshToken();
-                    fetchMovies();
-                } else {
-                    throw new Error('Failed to fetch movies');
-                }
-            } else {
-                const data = await response.json();
-                setMovies(data);
-                setLoadingMovies(false);
+                throw new Error('Failed to fetch movies');
             }
+            const data = await response.json();
+            setMovies(data);
+            setLoadingMovies(false);
         } catch (error) {
             console.error('Error fetching movies:', error);
             setLoadingMovies(false);
+            // Handle error (e.g., show error message)
         }
     };
 
     const handleLogin = async (userData, authToken) => {
         setUser(userData);
-        setToken(authToken);
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('token', authToken);
-        setShowSignup(false);
         fetchMovies();
     };
 
     const handleLogout = () => {
         setUser(null);
-        setToken(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
-        setShowSignup(true);
+        setMovies([]); // Clear movies when logging out
+        setSelectedMovie(null); // Reset selected movie when logging out
     };
 
     const handleMovieClick = (movieData) => {
@@ -68,43 +59,40 @@ export const MainView = () => {
     };
 
     return (
-        <Row className="justify-content-md-center">
-            <div>
-                {!user ? (
-                    <>
-                        <LoginView onLoggedIn={handleLogin} />
-                        <SignupView onSignup={(userData, authToken) => handleLogin(userData, authToken)} />
-                    </>
-                ) : (
+        <Row className="justify-content-center">
+            {!user ? (
+                <Col md={4}>
+                    <LoginView onLoggedIn={handleLogin} />
+                    <SignupView onSignup={(userData, authToken) => handleLogin(userData, authToken)} />
+                </Col>
+            ) : (
+                <Col md={8}>
                     <div>
                         <button onClick={handleLogout}>Logout</button>
-                        {selectedMovie ? (
-                            <Col md={8} style={{ border: "1px solid black" }}>
-                                <MovieView
-                                    movie={selectedMovie}
-                                    onBackClick={() => setSelectedMovie(null)}
-                                />
-                            </Col>
-                        ) : (
-                            <div>
-                                {isLoadingMovies ? (
-                                    <div>Loading...</div>
-                                ) : movies.length === 0 ? (
-                                    <div>The movie list is empty</div>
-                                ) : (
-                                    movies.map((movie) => (
-                                        <MovieCard
-                                            key={movie.id}
-                                            movie={movie}
-                                            onMovieClick={(movie) => setSelectedMovie(movie)}
-                                        />
-                                    ))
-                                )}
-                            </div>
-                        )}
                     </div>
-                )}
-            </div>
+                    {selectedMovie ? (
+                        <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
+                    ) : (
+                        <Row xs={1} sm={2} md={3} lg={4} xl={5} className="g-4">
+                            {isLoadingMovies ? (
+                                <div>Loading...</div>
+                            ) : movies.length === 0 ? (
+                                <div>The movie list is empty</div>
+                            ) : (
+                                movies.map((movie) => (
+                                    <Col key={movie.id}>
+                                        <MovieCard
+                                            movie={movie}
+                                            onMovieClick={() => handleMovieClick(movie)}
+                                        />
+                                    </Col>
+                                ))
+                            )}
+                        </Row>
+                    )}
+                </Col>
+            )}
         </Row>
     );
 };
+

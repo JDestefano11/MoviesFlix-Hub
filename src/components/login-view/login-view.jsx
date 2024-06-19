@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import './login-view.scss'; // Import SCSS file for styling
 
-export const LoginView = ({ onLoggedIn }) => {
+export const LoginView = ({ onLoggedIn, switchToSignup }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
@@ -44,34 +45,44 @@ export const LoginView = ({ onLoggedIn }) => {
     };
 
     return (
-        <Form className="login-form" onSubmit={handleSubmit}>
-            <Form.Group controlId="formUsername">
-                <Form.Label className="form-label">Username:</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="form-control"
-                    required
-                />
-            </Form.Group>
+        <div className="login-view">
+            <div className="login-container">
+                <h2 className="login-heading">Sign In</h2>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group controlId="formUsername">
+                        <Form.Control
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            className="login-input"
+                        />
+                    </Form.Group>
 
-            <Form.Group controlId="formPassword">
-                <Form.Label className="form-label">Password:</Form.Label>
-                <Form.Control
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="form-control"
-                    required
-                />
-            </Form.Group>
+                    <Form.Group controlId="formPassword">
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="login-input"
+                        />
+                    </Form.Group>
 
-            {error && <div className="error-message">{error}</div>}
+                    {error && <div className="error-message">{error}</div>}
 
-            <Button variant="primary" type="submit" className="login-button">
-                Login
-            </Button>
-        </Form>
+                    <Button variant="primary" type="submit" className="login-button">
+                        Sign In
+                    </Button>
+                </Form>
+
+                <div className="signup-link">
+                    <span className="signup-text">New to MoviesFlix? </span>
+                    <span className="signup-link-text" onClick={switchToSignup}>Sign up now.</span>
+                </div>
+            </div>
+        </div>
     );
 };
