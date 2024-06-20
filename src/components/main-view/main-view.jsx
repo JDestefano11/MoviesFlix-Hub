@@ -18,6 +18,12 @@ export const MainView = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (user) {
+            fetchMovies();
+        }
+    }, [user]);
+
     const fetchMovies = async () => {
         setLoadingMovies(true);
         try {
@@ -80,7 +86,7 @@ export const MainView = () => {
                                 <div>The movie list is empty</div>
                             ) : (
                                 movies.map((movie) => (
-                                    <Col key={movie.id}>
+                                    <Col key={movie.id} style={{ marginBottom: '20px' }}>
                                         <MovieCard
                                             movie={movie}
                                             onMovieClick={() => handleMovieClick(movie)}

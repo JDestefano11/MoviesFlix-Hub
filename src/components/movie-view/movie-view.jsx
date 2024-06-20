@@ -8,7 +8,7 @@ export const MovieView = ({ movie, onBackClick }) => {
             <Container>
                 <Row className="justify-content-center">
                     <Col md={8} className="text-center">
-                        <img src={movie.ImageURL} alt={movie.Title} className="movie-poster" />
+                        <img src={movie.ImageUrl} alt={movie.Title} className="movie-poster" />
                     </Col>
                 </Row>
                 <Row className="justify-content-center">
