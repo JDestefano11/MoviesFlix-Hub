@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { MovieCard } from '../movie-card/movie-card';
+import { MovieView } from '../movie-view/movie-view';
 import { LoginView } from '../login-view/login-view';
 import { SignupView } from '../signup-view/signup-view';
-import { MovieView } from '../movie-view/movie-view';
+import { Row, Col } from 'react-bootstrap';
 
 export const MainView = () => {
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
@@ -58,38 +59,39 @@ export const MainView = () => {
     };
 
     return (
-        <div>
+        <Row className="justify-content-center">
             {!user ? (
-                <div>
+                <Col md={4}>
                     <LoginView onLoggedIn={handleLogin} />
                     <SignupView onSignup={(userData, authToken) => handleLogin(userData, authToken)} />
-                </div>
+                </Col>
             ) : (
-                <div>
-                    <button onClick={handleLogout}>Logout</button>
+                <Col md={8}>
+                    <div>
+                        <button onClick={handleLogout}>Logout</button>
+                    </div>
                     {selectedMovie ? (
                         <MovieView movie={selectedMovie} onBackClick={() => setSelectedMovie(null)} />
                     ) : (
-                        <div>
+                        <Row xs={1} sm={2} md={3} lg={4} xl={5} className="g-4">
                             {isLoadingMovies ? (
                                 <div>Loading...</div>
                             ) : movies.length === 0 ? (
                                 <div>The movie list is empty</div>
                             ) : (
-                                <div>
-                                    {movies.map((movie) => (
+                                movies.map((movie) => (
+                                    <Col key={movie.id}>
                                         <MovieCard
-                                            key={movie.id}
                                             movie={movie}
                                             onMovieClick={() => handleMovieClick(movie)}
                                         />
-                                    ))}
-                                </div>
+                                    </Col>
+                                ))
                             )}
-                        </div>
+                        </Row>
                     )}
-                </div>
+                </Col>
             )}
-        </div>
+        </Row>
     );
 };
