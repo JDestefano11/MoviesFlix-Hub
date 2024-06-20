@@ -86,12 +86,10 @@ export const MainView = () => {
                                 <div>The movie list is empty</div>
                             ) : (
                                 movies.map((movie) => (
-                                    <Col key={movie.id} style={{ marginBottom: '20px' }}>
-                                        <MovieCard
-                                            movie={movie}
-                                            onMovieClick={() => handleMovieClick(movie)}
-                                        />
-                                    </Col>
+                                    <MovieCard
+                                        movie={movie}
+                                        onMovieClick={() => handleMovieClick(movie)}
+                                    />
                                 ))
                             )}
                         </Row>
