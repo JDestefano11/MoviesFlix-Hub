@@ -1,54 +1,88 @@
 import React, { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import './login-view.scss'; // Import SCSS file for styling
 
-export const LoginView = ({ onLoggedIn }) => {
+export const LoginView = ({ onLoggedIn, switchToSignup }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Form validation
         if (!username || !password) {
-            alert('Please enter both username and password.');
+            setError('Please enter both username and password.');
             return;
         }
 
+        try {
+            const response = await fetch('https://moviesflix-hub-fca46ebf9888.herokuapp.com/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        const user = {
-            username: username,
-            password: password
+            const data = await response.json();
 
-        };
-        const token = 'dummyToken';
+            if (!response.ok) {
+                throw new Error('Login failed');
+            }
 
-        // Store user data and token in localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
+            const { token } = data;
 
-        onLoggedIn(user, token);
+            // Store user and token in local storage
+            localStorage.setItem('user', JSON.stringify({ username }));
+            localStorage.setItem('token', token);
+
+            // Notify parent component about successful login
+            onLoggedIn({ username }, token);
+        } catch (error) {
+            setError('Login failed. Please try again.');
+            console.error('Login error:', error);
+        }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Username:
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-            </label>
-            <label>
-                Password:
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-            </label>
-            <button type="submit">Login</button>
-        </form>
+        <div className="login-view">
+            <div className="login-container">
+                <h2 className="login-heading">Sign In</h2>
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group controlId="formUsername">
+                        <Form.Control
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            className="login-input"
+                        />
+                    </Form.Group>
+
+                    <Form.Group controlId="formPassword">
+                        <Form.Control
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="login-input"
+                        />
+                    </Form.Group>
+
+                    {error && <div className="error-message">{error}</div>}
+
+                    <Button variant="primary" type="submit" className="login-button">
+                        Sign In
+                    </Button>
+                </Form>
+
+                <div className="signup-link">
+                    <span className="signup-text">New to MoviesFlix? </span>
+                    <span className="signup-link-text" onClick={switchToSignup}>Sign up now.</span>
+                </div>
+            </div>
+        </div>
     );
 };
