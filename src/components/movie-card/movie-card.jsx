@@ -7,12 +7,13 @@ export const MovieCard = ({ movie, onMovieClick }) => {
     };
 
     const cardStyles = {
-        width: '250px', // Fixed width for each card
-        marginBottom: '20px', // Space between cards
-        backgroundColor: '#1a1a1a', // Dark background color
-        color: '#f0f0f0', // Light text color
-        border: '1px solid #333', // Dark border
-        borderRadius: '10px', // Rounded corners
+        width: '250px',
+        marginBottom: '20px',
+        backgroundColor: '#1a1a1a',
+        color: '#f0f0f0',
+        border: '1px solid #333',
+        borderRadius: '10px',
+        margin: '20px'
     };
 
     const imageStyles = {
