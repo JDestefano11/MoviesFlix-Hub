@@ -1,0 +1,97 @@
+.profile-view {
+    padding: 20px;
+
+    h2 {
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+
+    .profile-actions {
+        margin-bottom: 10px;
+    }
+
+    .delete-form {
+        margin-top: 20px;
+        color: #dc3545;
+    }
+
+    .update-button {
+        margin-top: 10px;
+    }
+
+    form {
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .favorite-movies {
+        margin-top: 30px;
+    }
+
+    .favorite-movies h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .movie-card {
+        margin-bottom: 20px;
+    }
+
+    @media screen and (max-width: 1199px) {
+        form {
+            padding: 15px;
+        }
+    }
+
+    @media screen and (max-width: 991px) {
+        .profile-view {
+            padding: 15px;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .profile-actions {
+            flex-direction: column;
+
+            button {
+                margin-bottom: 10px;
+            }
+        }
+
+        form {
+            padding: 10px;
+        }
+
+        .favorite-movies {
+            margin-top: 20px;
+        }
+
+        .favorite-movies h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+    }
+
+    @media screen and (max-width: 479px) {
+        .profile-view {
+            padding: 10px;
+        }
+
+        .favorite-movies h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+    }
+}
+
+form {
+    margin-top: 10px;
+}
+
+form .btn-primary {
+    margin-top: 10px;
+}
