@@ -1,12 +1,8 @@
-/* login-view.scss */
-
 body {
     margin: 0;
     padding: 0;
     background-color: #1a1a1a;
-    /* Dark background for cinematic feel */
     font-family: 'Roboto', sans-serif;
-    /* Example font family */
 }
 
 .login-view {
@@ -17,20 +13,31 @@ body {
 }
 
 .login-container {
-    background-color: #333;
-    /* Darker background for the login form */
+    background-color: #1A1A1A;
     padding: 30px;
     border-radius: 8px;
-    max-width: 400px;
     width: 100%;
     text-align: center;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-    /* Slightly stronger box shadow */
+
+    @media (min-width: 1200px) {
+        max-width: 800px;
+        padding: 50px;
+    }
+
+    @media (min-width: 1400px) {
+        max-width: 1000px;
+        padding: 70px;
+    }
+
+    @media (min-width: 1600px) {
+        max-width: 1200px;
+        padding: 90px;
+    }
 }
 
 .login-heading {
     color: #f0f0f0;
-    /* Light grayish-white for headings */
     font-size: 28px;
     margin-bottom: 20px;
 }
@@ -38,37 +45,46 @@ body {
 .login-input {
     margin-bottom: 15px;
     border: 1px solid #555;
-    /* Darker border for input fields */
     border-radius: 4px;
     padding: 10px;
     width: 100%;
     font-size: 16px;
-    background-color: #444;
-    /* Dark background for input fields */
+    background-color: #0D1B2A;
     color: #f0f0f0;
-    /* Light text color */
 }
 
 .login-button {
     width: 100%;
     margin-top: 20px;
-    background-color: #ff4500;
-    /* Orange-red for buttons */
+    background-color: #FFD700;
     border: none;
     font-size: 16px;
     padding: 12px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-}
 
-.login-button:hover {
-    background-color: #ff5722;
-    /* Darker shade of orange-red on hover */
+    &:hover {
+        background-color: #E2B400;
+    }
+
+    @media (min-width: 1200px) {
+        font-size: 18px;
+        padding: 14px;
+    }
+
+    @media (min-width: 1400px) {
+        font-size: 20px;
+        padding: 16px;
+    }
+
+    @media (min-width: 1600px) {
+        font-size: 22px;
+        padding: 18px;
+    }
 }
 
 .error-message {
-    color: #ff4500;
-    /* Orange-red for error messages */
+    color: #FFD700;
     margin-top: 10px;
 }
 
@@ -83,7 +99,50 @@ body {
 }
 
 .signup-link-text {
-    color: #ff4500;
-    /* Orange-red for signup link text */
+    color: #FFD700;
     cursor: pointer;
+}
+
+@media (max-width: 320px) {
+    .login-container {
+        padding: 20px;
+    }
+
+    .login-heading {
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .login-input {
+        font-size: 14px;
+    }
+
+    .login-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+    .login-container {
+        max-width: 320px;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .login-container {
+        max-width: 480px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .login-container {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 993px) and (max-width: 1200px) {
+    .login-container {
+        max-width: 992px;
+    }
 }
