@@ -1,122 +1,127 @@
 .movie-view {
-    background-color: #1a1a1a;
-    color: #f0f0f0;
-    padding: 40px 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  padding: 40px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-    .movie-poster {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+  .movie-poster {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
 
-    .movie-details {
-        margin-top: 20px;
+  .movie-details {
+    margin-top: 20px;
 
-        h2 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #333333;
-        }
+    h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      color: #ffd700;
 
-        p {
-            font-size: 16px;
-            line-height: 1.5;
-            margin-bottom: 8px;
-            color: #f0f0f0;
-        }
+      p {
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 8px;
+        color: #f0f0f0;
+      }
 
-        strong {
-            font-weight: bold;
-        }
+      strong {
+        font-weight: bold;
+      }
     }
 
     .back-button {
-        color: #FFD700;
-        text-decoration: none;
-        margin-top: 20px;
-        font-size: 18px;
-        transition: color 0.3s ease;
+      color: #ffd700;
+      text-decoration: none;
+      margin-top: 20px;
+      font-size: 18px;
+      transition: color 0.3s ease;
 
-        &:hover {
-            color: #E2B400;
-        }
+      &:hover {
+        color: #e2b400;
+      }
     }
 
     @media (max-width: 320px) {
-        padding: 20px;
+      padding: 20px;
 
-        .movie-poster {
-            width: 100%;
+      .movie-poster {
+        width: 100%;
+      }
+
+      .movie-details {
+        margin-top: 10px;
+
+        h2 {
+          font-size: 24px;
+          color: #ffd700;
         }
 
-        .movie-details {
-            margin-top: 10px;
-
-            h2 {
-                font-size: 24px;
-            }
-
-            p {
-                font-size: 14px;
-            }
+        p {
+          font-size: 14px;
         }
+      }
 
-        .back-button {
-            font-size: 16px;
-        }
+      .back-button {
+        font-size: 16px;
+      }
     }
 
     @media (min-width: 321px) and (max-width: 480px) {
-        .movie-details {
-            h2 {
-                font-size: 26px;
-            }
-
-            p {
-                font-size: 15px;
-            }
+      .movie-details {
+        h2 {
+          font-size: 26px;
+          color: #ffd700;
         }
+
+        p {
+          font-size: 15px;
+        }
+      }
     }
 
     @media (min-width: 481px) and (max-width: 768px) {
-        .movie-details {
-            h2 {
-                font-size: 28px;
-            }
-
-            p {
-                font-size: 16px;
-            }
+      .movie-details {
+        h2 {
+          font-size: 28px;
+          color: #ffd700;
         }
+
+        p {
+          font-size: 16px;
+        }
+      }
     }
 
     @media (min-width: 769px) and (max-width: 992px) {
-        .movie-details {
-            h2 {
-                font-size: 30px;
-            }
-
-            p {
-                font-size: 17px;
-            }
+      .movie-details {
+        h2 {
+          font-size: 30px;
+          color: #ffd700;
         }
+
+        p {
+          font-size: 17px;
+        }
+      }
     }
 
     @media (min-width: 993px) and (max-width: 1200px) {
-        .movie-details {
-            h2 {
-                font-size: 32px;
-            }
-
-            p {
-                font-size: 18px;
-            }
+      .movie-details {
+        h2 {
+          font-size: 32px;
+          color: #ffd700;
         }
+
+        p {
+          font-size: 18px;
+        }
+      }
     }
+  }
 }
