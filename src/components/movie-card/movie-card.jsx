@@ -1,40 +1,55 @@
-import React from 'react';
-import { Button, Card } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button, Card } from "react-bootstrap";
+import PropTypes from "prop-types";
+import "./movie-card.scss";
 
-export const MovieCard = ({ movie, onMovieClick }) => {
-    const handleHardClick = () => {
-        onMovieClick(movie);
-    };
+export const MovieCard = ({ movie, onAddToFavorites, showButton = true }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
 
-    const cardStyles = {
-        width: '250px',
-        marginBottom: '20px',
-        backgroundColor: '#1a1a1a',
-        color: '#f0f0f0',
-        border: '1px solid #333',
-        borderRadius: '10px',
-        margin: '20px'
-    };
+  const handleToggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    onAddToFavorites(movie, !isFavorite);
+  };
 
-    const imageStyles = {
-        height: '350px', // Fixed height for the movie poster
-        objectFit: 'cover', // Cover to maintain aspect ratio
-        borderTopLeftRadius: '10px', // Rounded corners for top
-        borderTopRightRadius: '10px',
-    };
+  return (
+    <Card className="movie-card">
+      <Card.Img
+        variant="top"
+        src={movie.ImageUrl || "default-image-url.png"}
+        alt={movie.Title}
+        className="movie-image"
+      />
+      <Card.Body>
+        <Card.Title>{movie.Title}</Card.Title>
+        <Card.Text>Genre: {movie.Genre.Name}</Card.Text>
+        <Link to={`/movies/${movie._id}`} className="movie-link">
+          <Button variant="link" className="movie-button">
+            View Details
+          </Button>
+        </Link>
+        {showButton && (
+          <Button
+            onClick={handleToggleFavorite}
+            className={`movie-button ${isFavorite ? "favorite" : ""}`}
+          >
+            {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          </Button>
+        )}
+      </Card.Body>
+    </Card>
+  );
+};
 
-    return (
-        <Card style={cardStyles}>
-            <Card.Img variant="top" src={movie.ImageUrl} alt={movie.Title} style={imageStyles} />
-            <Card.Body>
-                <Card.Title>{movie.Title}</Card.Title>
-                <Card.Text>
-                    Genre: {movie.Genre.Name}
-                </Card.Text>
-                <Button onClick={() => onMovieClick(movie)} variant="link" className="btn-link" style={{ color: '#007bff' }}>
-                    Open
-                </Button>
-            </Card.Body>
-        </Card>
-    );
+MovieCard.propTypes = {
+  movie: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    ImageUrl: PropTypes.string.isRequired,
+    Title: PropTypes.string.isRequired,
+    Genre: PropTypes.shape({
+      Name: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  onAddToFavorites: PropTypes.func.isRequired,
+  showButton: PropTypes.bool,
 };
