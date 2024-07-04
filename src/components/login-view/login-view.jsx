@@ -1,46 +1,47 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import './login-view.scss'; // Import SCSS file for styling
+import React, { useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import "./login-view.scss";
 
 export const LoginView = ({ onLoggedIn, switchToSignup }) => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         if (!username || !password) {
-            setError('Please enter both username and password.');
+            setError("Please enter both username and password.");
             return;
         }
 
         try {
-            const response = await fetch('https://moviesflix-hub-fca46ebf9888.herokuapp.com/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+            const response = await fetch(
+                "https://moviesflix-hub-fca46ebf9888.herokuapp.com/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ username, password }),
+                }
+            );
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                throw new Error("Login failed");
             }
 
             const { token } = data;
+            localStorage.setItem("user", JSON.stringify({ username }));
+            localStorage.setItem("token", token);
 
-            // Store user and token in local storage
-            localStorage.setItem('user', JSON.stringify({ username }));
-            localStorage.setItem('token', token);
-
-            // Notify parent component about successful login
             onLoggedIn({ username }, token);
         } catch (error) {
-            setError('Login failed. Please try again.');
-            console.error('Login error:', error);
+            setError("Login failed. Please try again.");
+            console.error("Login error:", error);
         }
     };
 
@@ -80,7 +81,10 @@ export const LoginView = ({ onLoggedIn, switchToSignup }) => {
 
                 <div className="signup-link">
                     <span className="signup-text">New to MoviesFlix? </span>
-                    <span className="signup-link-text" onClick={switchToSignup}>Sign up now.</span>
+                    {/* Link to SignupView */}
+                    <Link to="/signup" className="signup-link-text">
+                        Sign up now.
+                    </Link>
                 </div>
             </div>
         </div>
