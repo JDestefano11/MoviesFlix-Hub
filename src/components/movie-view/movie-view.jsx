@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link, useParams } from "react-router-dom";
-import { Container, Row, Col } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import "./movie-view.scss";
 
 export const MovieView = ({ movies }) => {
   const { movieId } = useParams();
+  const navigate = useNavigate();
   const movie = movies.find((m) => m._id === movieId);
 
   if (!movie) return <div>Movie not found</div>;
@@ -66,12 +67,16 @@ export const MovieView = ({ movies }) => {
                 </div>
               )}
             </div>
+            <Button
+              variant="secondary"
+              className="back-button"
+              onClick={() => navigate("/movies")}
+            >
+              Back to Movies
+            </Button>
           </Col>
         </Row>
       </Container>
-      <Link to="/" className="back-button" style={{ cursor: "pointer" }}>
-        Back
-      </Link>
     </div>
   );
 };
