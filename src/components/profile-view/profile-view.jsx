@@ -99,7 +99,7 @@ export const ProfileView = ({
         key={movie._id}
         movie={movie}
         onAddToFavorites={onAddToFavorites}
-        showButton={true}
+        showButton={false}
       />
     ));
   };
