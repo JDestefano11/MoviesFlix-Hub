@@ -8,14 +8,18 @@ export const MovieCard = ({ movie, onAddToFavorites, showButton = true }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    const favoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies") || "[]");
+    const favoriteMovies = JSON.parse(
+      localStorage.getItem("favoriteMovies") || "[]"
+    );
     if (favoriteMovies.includes(movie._id)) {
       setIsFavorite(true);
     }
   }, [movie._id]);
 
   const handleToggleFavorite = () => {
-    const favoriteMovies = JSON.parse(localStorage.getItem("favoriteMovies") || "[]");
+    const favoriteMovies = JSON.parse(
+      localStorage.getItem("favoriteMovies") || "[]"
+    );
     if (isFavorite) {
       favoriteMovies.splice(favoriteMovies.indexOf(movie._id), 1);
     } else {
