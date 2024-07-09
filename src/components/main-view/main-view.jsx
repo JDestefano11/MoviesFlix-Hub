@@ -12,12 +12,10 @@ import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { Row, Spinner, Alert } from "react-bootstrap";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
-import { addToFavorites, removeFromFavorites } from "./api"; // Update path as needed
 
 export const MainView = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [movies, setMovies] = useState([]);
-  const [favorites, setFavorites] = useState([]);
   const [isLoadingMovies, setLoadingMovies] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,10 +23,6 @@ export const MainView = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
-      const storedFavorites = JSON.parse(localStorage.getItem("favorites"));
-      if (storedFavorites) {
-        setFavorites(storedFavorites);
-      }
     }
   }, []);
 
@@ -68,10 +62,6 @@ export const MainView = () => {
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", authToken);
     fetchMovies();
-    const storedFavorites = JSON.parse(localStorage.getItem("favorites"));
-    if (storedFavorites) {
-      setFavorites(storedFavorites);
-    }
     // Navigate to the movies list after successful login
     window.location.href = "/movies";
   };
@@ -81,8 +71,6 @@ export const MainView = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
-    setFavorites([]);
-    localStorage.removeItem("favorites");
   };
 
   const handleUserUpdate = (updatedUser) => {
@@ -95,32 +83,6 @@ export const MainView = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
-    setFavorites([]);
-    localStorage.removeItem("favorites");
-  };
-
-  const handleAddToFavorites = async (movie) => {
-    try {
-      await addToFavorites(user.username, movie._id);
-      const updatedFavorites = [...favorites, movie];
-      setFavorites(updatedFavorites);
-      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-    } catch (error) {
-      console.error("Failed to add movie to favorites:", error);
-      // Handle error state or show notification to the user
-    }
-  };
-
-  const handleRemoveFromFavorites = async (movie) => {
-    try {
-      await removeFromFavorites(user.username, movie._id);
-      const updatedFavorites = favorites.filter((fav) => fav._id !== movie._id);
-      setFavorites(updatedFavorites);
-      localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-    } catch (error) {
-      console.error("Failed to remove movie from favorites:", error);
-      // Handle error state or show notification to the user
-    }
   };
 
   const renderMovieList = () => {
@@ -133,14 +95,7 @@ export const MainView = () => {
     if (movies.length === 0) {
       return <div>The movie list is empty</div>;
     }
-    return movies.map((movie) => (
-      <MovieCard
-        key={movie._id}
-        movie={movie}
-        onAddToFavorites={() => handleAddToFavorites(movie)}
-        onRemoveFromFavorites={() => handleRemoveFromFavorites(movie)}
-      />
-    ));
+    return movies.map((movie) => <MovieCard key={movie._id} movie={movie} />);
   };
 
   return (
@@ -172,11 +127,8 @@ export const MainView = () => {
               <ProfileView
                 user={user}
                 movies={movies}
-                favorites={favorites}
                 onUserUpdate={handleUserUpdate}
                 onUserDeregister={handleUserDeregister}
-                onAddToFavorites={handleAddToFavorites}
-                onRemoveFromFavorites={handleRemoveFromFavorites}
               />
             }
           />
