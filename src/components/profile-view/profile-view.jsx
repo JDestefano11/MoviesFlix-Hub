@@ -92,7 +92,7 @@ export const ProfileView = ({
   const handleDeregister = async () => {
     try {
       const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user._id}`,
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.Username}`,
         {
           method: "DELETE",
           headers: {
