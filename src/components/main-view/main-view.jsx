@@ -85,6 +85,47 @@ export const MainView = () => {
     setMovies([]);
   };
 
+  const handleAddFavorite = async (movieId) => {
+    try {
+      const response = await fetch(
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/movies/${movieId}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to add to favorites");
+      }
+      // Optionally update local state or refetch favorites
+    } catch (error) {
+      console.error("Error adding to favorites:", error);
+    }
+  };
+
+  const handleRemoveFavorite = async (movieId) => {
+    try {
+      const response = await fetch(
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/movies/${movieId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to remove from favorites");
+      }
+      // Optionally update local state or refetch favorites
+    } catch (error) {
+      console.error("Error removing from favorites:", error);
+    }
+  };
+
   const renderMovieList = () => {
     if (isLoadingMovies) {
       return <Spinner animation="border" />;
@@ -95,7 +136,14 @@ export const MainView = () => {
     if (movies.length === 0) {
       return <div>The movie list is empty</div>;
     }
-    return movies.map((movie) => <MovieCard key={movie._id} movie={movie} />);
+    return movies.map((movie) => (
+      <MovieCard
+        key={movie._id}
+        movie={movie}
+        onAddFavorite={handleAddFavorite}
+        onRemoveFavorite={handleRemoveFavorite}
+      />
+    ));
   };
 
   return (

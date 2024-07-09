@@ -30,7 +30,8 @@ export const ProfileView = ({
       const favoriteMoviesList = movies.filter((movie) =>
         user.FavoriteMovies.includes(movie._id)
       );
-      setFavoriteMovies(favoriteMoviesList);
+      // Ensure that favorites state is updated when movies or user changes
+      setFavorites(favoriteMoviesList);
     }
   }, [movies, user]);
 
@@ -114,6 +115,10 @@ export const ProfileView = ({
   };
 
   const renderFavoriteMovies = () => {
+    if (!favorites || favorites.length === 0) {
+      return <div>No favorite movies added.</div>;
+    }
+
     return favorites.map((movie) => (
       <MovieCard
         key={movie._id}
