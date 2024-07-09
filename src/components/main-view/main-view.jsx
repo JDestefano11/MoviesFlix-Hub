@@ -12,6 +12,7 @@ import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { Row, Spinner, Alert } from "react-bootstrap";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { addToFavorites, removeFromFavorites } from "./api"; // Update path as needed
 
 export const MainView = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
@@ -98,15 +99,27 @@ export const MainView = () => {
     localStorage.removeItem("favorites");
   };
 
-  const handleAddToFavorites = (movie, addToFavorites) => {
-    if (addToFavorites) {
+  const handleAddToFavorites = async (movie) => {
+    try {
+      await addToFavorites(user.username, movie._id);
       const updatedFavorites = [...favorites, movie];
       setFavorites(updatedFavorites);
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-    } else {
+    } catch (error) {
+      console.error("Failed to add movie to favorites:", error);
+      // Handle error state or show notification to the user
+    }
+  };
+
+  const handleRemoveFromFavorites = async (movie) => {
+    try {
+      await removeFromFavorites(user.username, movie._id);
       const updatedFavorites = favorites.filter((fav) => fav._id !== movie._id);
       setFavorites(updatedFavorites);
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+    } catch (error) {
+      console.error("Failed to remove movie from favorites:", error);
+      // Handle error state or show notification to the user
     }
   };
 
@@ -124,7 +137,8 @@ export const MainView = () => {
       <MovieCard
         key={movie._id}
         movie={movie}
-        onAddToFavorites={handleAddToFavorites}
+        onAddToFavorites={() => handleAddToFavorites(movie)}
+        onRemoveFromFavorites={() => handleRemoveFromFavorites(movie)}
       />
     ));
   };
@@ -162,6 +176,7 @@ export const MainView = () => {
                 onUserUpdate={handleUserUpdate}
                 onUserDeregister={handleUserDeregister}
                 onAddToFavorites={handleAddToFavorites}
+                onRemoveFromFavorites={handleRemoveFromFavorites}
               />
             }
           />

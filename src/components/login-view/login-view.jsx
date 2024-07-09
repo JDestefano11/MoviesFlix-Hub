@@ -28,19 +28,21 @@ export const LoginView = ({ onLoggedIn, switchToSignup }) => {
         }
       );
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error("Login failed");
+        throw new Error(
+          "Invalid credentials. Please check your username and password."
+        );
       }
 
+      const data = await response.json();
       const { token } = data;
+
       localStorage.setItem("user", JSON.stringify({ username }));
       localStorage.setItem("token", token);
 
       onLoggedIn({ username }, token);
     } catch (error) {
-      setError("Login failed. Please try again.");
+      setError(error.message || "Login failed. Please try again.");
       console.error("Login error:", error);
     }
   };
