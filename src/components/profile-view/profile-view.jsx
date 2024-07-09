@@ -34,18 +34,38 @@ export const ProfileView = ({
     }
   }, [movies, user]);
 
+  // Update a users username in profile view
   const handleUpdate = async (e) => {
     e.preventDefault();
     const updatedUser = {
-      Username: username,
-      Password: password,
-      Email: email,
-      BirthDate: birthdate,
+      password,
+      email,
+      birthday: birthdate,
     };
 
     try {
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user._id}`,
+      // Update the username separately if it has changed
+      if (username !== user.username) {
+        const responseUsername = await fetch(
+          `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/update-username`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ newUsername: username }),
+          }
+        );
+
+        if (!responseUsername.ok) {
+          throw new Error("Failed to update username");
+        }
+      }
+
+      // Update the rest of the user details
+      const responseDetails = await fetch(
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}`,
         {
           method: "PUT",
           headers: {
@@ -56,11 +76,11 @@ export const ProfileView = ({
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to update user");
+      if (!responseDetails.ok) {
+        throw new Error("Failed to update user details");
       }
 
-      const data = await response.json();
+      const data = await responseDetails.json();
       onUserUpdate(data);
       setMessage("Profile updated successfully.");
     } catch (error) {
