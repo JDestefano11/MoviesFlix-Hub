@@ -24,6 +24,7 @@ export const MainView = () => {
   useEffect(() => {
     if (!token) return;
 
+    // Fetch movies from API
     fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies", {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -38,8 +39,10 @@ export const MainView = () => {
       .then((data) => {
         setMovies(data);
       })
-      .catch((error) => {});
-  }, [token]);
+      .catch((error) => {
+        console.error("Error fetching movies:", error);
+      });
+  }, [token]); // Update when token changes
 
   return (
     <BrowserRouter>
@@ -80,7 +83,7 @@ export const MainView = () => {
             }
           />
           <Route
-            path="/"
+            path="/movies"
             element={
               user ? (
                 movies.length === 0 ? (

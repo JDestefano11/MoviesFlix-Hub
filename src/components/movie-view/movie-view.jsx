@@ -5,15 +5,13 @@ import { Link, useParams } from "react-router-dom";
 
 export const MovieView = ({ movies }) => {
   const { movieId } = useParams();
-  console.log("movieId:", movieId);
-  console.log("movies:", movies);
 
+  // Find the selected movie based on movieId
   const movie = movies.find((movie) => movie._id === movieId);
 
-  console.log("selected movie:", movie);
-
+  // If movie is not found, handle loading state or error
   if (!movie) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // or display an error message
   }
 
   return (
