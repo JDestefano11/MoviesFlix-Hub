@@ -12,7 +12,7 @@ export const MainView = () => {
   const storedToken = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
   const [movies, setMovies] = useState([]);
-  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
+  const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken || null);
 
   const onLoggedOut = () => {
