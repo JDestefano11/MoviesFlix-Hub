@@ -1,103 +1,49 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { useParams, useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button } from "react-bootstrap";
-import "./movie-view.scss";
+import { SimilarMoviesView } from "../similar-movies/similar-movies";
+import { Row, Col, Container } from "react-bootstrap";
+import { Link, useParams } from "react-router-dom";
 
 export const MovieView = ({ movies }) => {
   const { movieId } = useParams();
-  const navigate = useNavigate();
-  const movie = movies.find((m) => m._id === movieId);
+  console.log("movieId:", movieId);
+  console.log("movies:", movies);
 
-  if (!movie) return <div>Movie not found</div>;
+  const movie = movies.find((movie) => movie._id === movieId);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  console.log("selected movie:", movie);
+
+  if (!movie) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="movie-view">
-      <Container>
-        <Row className="justify-content-center">
-          <Col md={8} className="text-center">
-            <img
-              src={movie.ImageUrl}
-              alt={movie.Title}
-              className="movie-poster"
-            />
-          </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col md={8} className="text-center">
-            <div className="movie-details">
-              <h2>{movie.Title}</h2>
-              <p>
-                <strong>Description:</strong> {movie.Description}
-              </p>
-              {movie.Genre && (
-                <div>
-                  <p>
-                    <strong>Genre:</strong> {movie.Genre.Name}
-                  </p>
-                  <p>
-                    <strong>Genre Description:</strong>{" "}
-                    {movie.Genre.Description}
-                  </p>
-                </div>
-              )}
-              {movie.Director && (
-                <div>
-                  <p>
-                    <strong>Director:</strong> {movie.Director.Name}
-                  </p>
-                  <p>
-                    <strong>Director's Occupation:</strong>{" "}
-                    {movie.Director.Occupation}
-                  </p>
-                  <p>
-                    <strong>Director's Birthdate:</strong>{" "}
-                    {formatDate(movie.Director.BirthDate)}
-                  </p>
-                  <p>
-                    <strong>Director's Birthplace:</strong>{" "}
-                    {movie.Director.BirthPlace}
-                  </p>
-                </div>
-              )}
-            </div>
-            <Button
-              variant="secondary"
-              className="back-button"
-              onClick={() => navigate("/movies")}
-            >
-              Back to Movies
-            </Button>
-          </Col>
-        </Row>
-      </Container>
-    </div>
+    <Container>
+      <Row className="my-5">
+        <Col md={6} className="mb-3">
+          <img src={movie.ImageUrl} alt={movie.Title} />
+        </Col>
+        <Col md={5}>
+          <h1 className="mb-3">{movie.Title}</h1>
+          <p className="text-muted">{movie.Description}</p>
+          <p className="mt-4">
+            <strong>Genre:</strong> {movie.Genre.Name}
+          </p>
+          <p>
+            <strong>Director:</strong> {movie.Director.Name}
+          </p>
+          <p className="text-muted">{movie.Director.Bio}</p>
+        </Col>
+        <Col md={12} className="mb-2">
+          <div className="d-grid gap-2 d-md-flex justify-content-md-end me-4">
+            <Link to={`/`}>
+              <button className="btn btn-primary">Back</button>
+            </Link>
+          </div>
+        </Col>
+        <Col md={12}>
+          <SimilarMoviesView movieId={movie._id} />
+        </Col>
+      </Row>
+    </Container>
   );
-};
-
-MovieView.propTypes = {
-  movies: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      ImageUrl: PropTypes.string.isRequired,
-      Title: PropTypes.string.isRequired,
-      Description: PropTypes.string.isRequired,
-      Genre: PropTypes.shape({
-        Name: PropTypes.string.isRequired,
-        Description: PropTypes.string,
-      }),
-      Director: PropTypes.shape({
-        Name: PropTypes.string.isRequired,
-        Occupation: PropTypes.string,
-        BirthDate: PropTypes.string,
-        BirthPlace: PropTypes.string,
-      }),
-    })
-  ).isRequired,
 };

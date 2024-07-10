@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import "./login-view.scss";
 
 export const LoginView = ({ onLoggedIn }) => {
@@ -9,46 +9,40 @@ export const LoginView = ({ onLoggedIn }) => {
   const [error, setError] = useState(null);
   const [isLoggedIn, setLoggedIn] = useState(false);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!username || !password) {
-      setError("Please enter both username and password.");
-      return;
-    }
+    const data = {
+      username: username,
+      password: password,
+    };
 
-    try {
-      const response = await fetch(
-        "https://moviesflix-hub-fca46ebf9888.herokuapp.com/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username, password }),
+    fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Login failed");
         }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-
-      const { token, user } = data;
-
-      // Use onLoggedIn to handle local storage and state updates
-      onLoggedIn(user, token);
-
-      // Set isLoggedIn state to true upon successful login
-      setLoggedIn(true);
-    } catch (error) {
-      setError("Login failed. Please try again.");
-      console.error("Login error:", error);
-    }
+        return response.json(); // parse JSON from the response
+      })
+      .then((data) => {
+        console.log("Login response: ", data);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+        onLoggedIn(data.user, data.token);
+        setLoggedIn(true);
+      })
+      .catch((error) => {
+        setError("Login failed. Please try again.");
+        console.error("Login error:", error);
+      });
   };
 
-  // Render login form or redirect to /movies if isLoggedIn is true
   if (isLoggedIn) {
     return <Navigate to="/movies" />;
   }

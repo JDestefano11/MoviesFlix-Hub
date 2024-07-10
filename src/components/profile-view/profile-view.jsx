@@ -1,240 +1,229 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
-import "./profile-view.scss";
 
-export const ProfileView = ({
-  user,
-  movies,
-  favorites,
-  onUserUpdate,
-  onUserDeregister,
-  onAddToFavorites,
-}) => {
-  const [username, setUsername] = useState(user.Username);
+export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
+  const [username, setUsername] = useState(user.username);
+  const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [password, setPassword] = useState("");
-  const [email, setEmail] = useState(user.Email);
+  const [email, setEmail] = useState(user.email);
   const [birthdate, setBirthdate] = useState(
     user.BirthDate ? user.BirthDate.substring(0, 10) : ""
   );
-  const [message, setMessage] = useState(null);
-  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
-  const [showDeregistrationForm, setShowDeregistrationForm] = useState(false);
-
+  const [feedbackMessage, setFeedbackMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && user.FavoriteMovies) {
-      const favoriteMoviesList = movies.filter((movie) =>
-        user.FavoriteMovies.includes(movie._id)
-      );
-      // Ensure that favorites state is updated when movies or user changes
-      setFavorites(favoriteMoviesList);
-    }
-  }, [movies, user]);
-
-  // Update a users username in profile view
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const updatedUser = {
-      password,
-      email,
-      birthday: birthdate,
-    };
-
-    try {
-      // Update the username separately if it has changed
-      if (username !== user.username) {
-        const responseUsername = await fetch(
-          `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/update-username`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ newUsername: username }),
-          }
-        );
-
-        if (!responseUsername.ok) {
-          throw new Error("Failed to update username");
+    if (user && user.favoriteMovies) {
+      const fetchFavoriteMovies = async () => {
+        try {
+          const response = await fetch(
+            "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies",
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          const movies = await response.json();
+          const favoriteMoviesList = movies.filter((movie) =>
+            user.favoriteMovies.includes(movie._id)
+          );
+          setFavoriteMovies(favoriteMoviesList);
+        } catch (error) {
+          console.error("Error fetching favorite movies:", error);
         }
-      }
+      };
 
-      // Update the rest of the user details
-      const responseDetails = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify(updatedUser),
-        }
-      );
-
-      if (!responseDetails.ok) {
-        throw new Error("Failed to update user details");
-      }
-
-      const data = await responseDetails.json();
-      onUserUpdate(data);
-      setMessage("Profile updated successfully.");
-    } catch (error) {
-      console.error("Error updating user:", error);
-      setMessage("Error updating profile. Please try again.");
+      fetchFavoriteMovies();
     }
+  }, [user, token]);
+
+  const handleDelete = () => {
+    fetch(
+      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          setUser(null);
+          alert("Your account has been deleted");
+          onLoggedOut();
+        } else {
+          throw new Error("Failed to delete account");
+        }
+      })
+      .catch((error) => {
+        alert("Something went wrong: " + error.message);
+      });
   };
 
-  const handleDeregister = async () => {
-    try {
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.Username}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to deregister user");
-      }
-
-      onUserDeregister();
-      navigate("/");
-    } catch (error) {
-      console.error("Error deregistering user:", error);
-      setMessage("Error deregistering account. Please try again.");
+  const handleUpdate = (event) => {
+    event.preventDefault();
+    if (
+      username === user.username &&
+      email === user.email &&
+      birthday === user.birthday.split("T")[0] &&
+      !password
+    ) {
+      alert("No changes detected in the profile.");
+      return;
     }
+
+    const data = {
+      username,
+      email,
+      birthday,
+    };
+
+    if (password) {
+      data["password"] = password;
+    }
+
+    fetch(
+      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to update profile");
+        }
+      })
+      .then((updatedUser) => {
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setFeedbackMessage("Profile updated successfully!");
+      })
+      .catch((error) => {
+        setFeedbackMessage(`Update failed: ${error.message}`);
+      });
   };
 
   const renderFavoriteMovies = () => {
-    if (!favorites || favorites.length === 0) {
+    if (!favoriteMovies || favoriteMovies.length === 0) {
       return <div>No favorite movies added.</div>;
     }
 
-    return favorites.map((movie) => (
-      <MovieCard
-        key={movie._id}
-        movie={movie}
-        onAddToFavorites={onAddToFavorites}
-        showButton={false}
-      />
+    return favoriteMovies.map((movie) => (
+      <Col key={movie._id} className="mb-4">
+        <MovieCard movie={movie} showButton={false} />
+      </Col>
     ));
   };
 
-  const toggleRegistrationForm = () => {
-    setShowRegistrationForm(!showRegistrationForm);
-    setShowDeregistrationForm(false);
-  };
-
-  const toggleDeregistrationForm = () => {
-    setShowDeregistrationForm(!showDeregistrationForm);
-    setShowRegistrationForm(false);
-  };
-
   return (
-    <Container className="profile-view">
-      <Row className="justify-content-center">
+    <Container>
+      <Row>
         <Col md={8}>
-          <h2>User Profile</h2>
-          {message && <Alert variant="success">{message}</Alert>}
-          <Button
-            variant="outline-primary"
-            onClick={toggleRegistrationForm}
-            className="profile-actions"
-          >
-            Update Username
-          </Button>{" "}
-          <Button
-            variant="outline-danger"
-            onClick={toggleDeregistrationForm}
-            className="profile-actions"
-          >
-            Deregister
-          </Button>{" "}
-          {showRegistrationForm && (
-            <Form onSubmit={handleUpdate}>
-              <Form.Group controlId="formUsername">
-                <Form.Label>Username:</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="formPassword">
-                <Form.Label>Password:</Form.Label>
+          <h2>Update Profile</h2>
+
+          {feedbackMessage && <Alert variant="info">{feedbackMessage}</Alert>}
+
+          <Form onSubmit={handleUpdate}>
+            <Form.Group
+              as={Row}
+              className="mb-3"
+              controlId="formUpdateUsername"
+            >
+              <Form.Label column sm={2}>
+                Username
+              </Form.Label>
+              <Col sm={10}>
+                <div>
+                  <strong>{username}</strong>
+                </div>
+              </Col>
+            </Form.Group>
+
+            <Form.Group
+              as={Row}
+              className="mb-2"
+              controlId="formUpdatePassword"
+            >
+              <Form.Label column sm={2}>
+                Password
+              </Form.Label>
+              <Col sm={10}>
                 <Form.Control
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  minLength="4"
                 />
-              </Form.Group>
-              <Form.Group controlId="formEmail">
-                <Form.Label>Email:</Form.Label>
+              </Col>
+            </Form.Group>
+
+            <Form.Group as={Row} className="mb-3" controlId="formUpdateEmail">
+              <Form.Label column sm={2}>
+                Email
+              </Form.Label>
+              <Col sm={10}>
                 <Form.Control
                   type="email"
+                  placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
-              </Form.Group>
-              <Form.Group controlId="formBirthdate">
-                <Form.Label>Date of Birth:</Form.Label>
+              </Col>
+            </Form.Group>
+
+            <Form.Group
+              as={Row}
+              className="mb-3"
+              controlId="formUpdateBirthday"
+            >
+              <Form.Label column sm={2}>
+                Birthday
+              </Form.Label>
+              <Col sm={10}>
                 <Form.Control
                   type="date"
                   value={birthdate}
-                  onChange={(e) => setBirthdate(e.target.value)}
+                  onChange={(e) => setBirthday(e.target.value)}
                 />
-              </Form.Group>
-              <Button variant="primary" type="submit" className="update-button">
-                Update
-              </Button>
-            </Form>
-          )}
-          {showDeregistrationForm && (
-            <div className="delete-form">
-              {" "}
-              {/* Apply delete-form class */}
-              <p>Are you sure you want to deregister your account?</p>
-              <Button variant="danger" onClick={handleDeregister}>
-                Deregister
-              </Button>{" "}
-            </div>
-          )}
+              </Col>
+            </Form.Group>
+
+            <Button type="submit" className="w-100 mb-3">
+              UPDATE
+            </Button>
+
+            <Button
+              variant="secondary"
+              className="w-100 mb-4"
+              onClick={() => navigate("/")}
+            >
+              CANCEL
+            </Button>
+
+            <hr />
+
+            <Button variant="danger" className="w-100" onClick={handleDelete}>
+              REMOVE
+            </Button>
+          </Form>
         </Col>
       </Row>
-      <Row className="justify-content-center favorite-movies">
+      <Row className="mt-4">
         <Col md={8}>
           <h3>Favorite Movies</h3>
-          <Row xs={1} sm={2} md={3} lg={4} xl={5} className="g-4">
-            {renderFavoriteMovies()}
-          </Row>
+          <Row>{renderFavoriteMovies()}</Row>
         </Col>
       </Row>
     </Container>
   );
-};
-
-ProfileView.propTypes = {
-  user: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    Username: PropTypes.string.isRequired,
-    Email: PropTypes.string.isRequired,
-    BirthDate: PropTypes.string,
-    FavoriteMovies: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
-  movies: PropTypes.arrayOf(PropTypes.object).isRequired,
-  favorites: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onUserUpdate: PropTypes.func.isRequired,
-  onUserDeregister: PropTypes.func.isRequired,
-  onAddToFavorites: PropTypes.func.isRequired,
 };
