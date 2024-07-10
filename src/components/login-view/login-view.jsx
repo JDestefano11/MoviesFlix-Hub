@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Button, Form } from "react-bootstrap";
-import { Link, Navigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Form, Button, Container, Row } from "react-bootstrap";
 import "./login-view.scss";
 
 export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const [isLoggedIn, setLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const data = {
@@ -17,83 +16,85 @@ export const LoginView = ({ onLoggedIn }) => {
       password: password,
     };
 
-    fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Login failed");
+    try {
+      const response = await fetch(
+        "https://moviesflix-hub-fca46ebf9888.herokuapp.com/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
         }
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Login response: ", data);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("token", data.token);
-        onLoggedIn(data.user, data.token);
-        setLoggedIn(true);
-      })
-      .catch((error) => {
-        setError("Login failed. Please try again.");
-        console.error("Login error:", error);
-      });
+      );
+
+      const responseData = await response.json();
+      console.log("Login response:", responseData);
+
+      if (response.ok) {
+        localStorage.setItem("user", JSON.stringify(responseData.user));
+        localStorage.setItem("token", responseData.token);
+        onLoggedIn(responseData.user, responseData.token);
+        navigate("/movies");
+      } else {
+        // Handle different HTTP status codes
+        if (response.status === 401) {
+          alert("Invalid username or password");
+        } else {
+          alert("Login failed. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      <Navigate to="/movies" replace />;
-    }
-  }, [isLoggedIn]);
-
-  if (isLoggedIn) {
-    return <Navigate to="/movies" replace />;
-  }
-
   return (
-    <div className="login-view">
-      <div className="login-container">
-        <h2 className="login-heading">Sign In</h2>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formUsername">
+    <Container
+      className="d-flex align-items-center justify-content-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Row>
+        <Form onSubmit={handleSubmit} className="login-form">
+          <div className="text-center mb-4">
+            <h1>Welcome to MyFlix-Hub</h1>
+            <h6>To get started, please sign in</h6>
+          </div>
+
+          <Form.Group controlId="formUsername" className="mb-3">
             <Form.Control
               type="text"
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="login-input"
+              minLength="3"
+              className="mb-3"
             />
           </Form.Group>
 
-          <Form.Group controlId="formPassword">
+          <Form.Group controlId="formPassword" className="mb-3 password-group">
             <Form.Control
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="login-input"
             />
           </Form.Group>
 
-          {error && <div className="error-message">{error}</div>}
-
-          <Button variant="primary" type="submit" className="login-button">
+          <Button variant="primary" type="submit" className="w-100 mb-3">
             Sign In
           </Button>
-        </Form>
 
-        <div className="signup-link">
-          <span className="signup-text">New to MoviesFlix? </span>
-          <Link to="/signup" className="signup-link-text">
-            Sign up now.
-          </Link>
-        </div>
-      </div>
-    </div>
+          <div className="text-center">
+            <Link to="/signup" className="text-decoration-none">
+              New to myFlix-Hub? Sign up now.
+            </Link>
+          </div>
+        </Form>
+      </Row>
+    </Container>
   );
 };
