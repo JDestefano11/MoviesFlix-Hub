@@ -99,6 +99,12 @@ export const MainView = () => {
     setFavoritesInLocalStorage(updatedFavorites);
   };
 
+  const handleRemoveFromFavorites = (movieId) => {
+    let updatedFavorites = favorites.filter((fav) => fav !== movieId);
+    setFavorites(updatedFavorites);
+    setFavoritesInLocalStorage(updatedFavorites);
+  };
+
   const renderMovieList = () => {
     if (isLoadingMovies) {
       return <Spinner animation="border" />;
@@ -113,7 +119,8 @@ export const MainView = () => {
       <MovieCard
         key={movie._id}
         movie={movie}
-        onAddToFavorites={handleAddToFavorites}
+        onAddFavorite={handleAddToFavorites}
+        onRemoveFavorite={handleRemoveFromFavorites}
       />
     ));
   };
