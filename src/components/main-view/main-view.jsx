@@ -69,14 +69,10 @@ export const MainView = () => {
             }
           />
           <Route
-            path="/movies/:title"
+            path="/movies/:movieId"
             element={
               user ? (
-                movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
-                ) : (
-                  <MovieView movies={movies} />
-                )
+                <MovieView movies={movies} />
               ) : (
                 <Navigate to="/login" replace />
               )
