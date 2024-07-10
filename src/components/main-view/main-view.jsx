@@ -12,19 +12,19 @@ import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { Row, Spinner, Alert } from "react-bootstrap";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import {
+  getUserFromLocalStorage,
+  getTokenFromLocalStorage,
+  getFavoritesFromLocalStorage,
+  setFavoritesInLocalStorage,
+} from "../utilis/localstorage";
 
 export const MainView = () => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(getUserFromLocalStorage());
   const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState(getFavoritesFromLocalStorage());
   const [isLoadingMovies, setLoadingMovies] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -40,7 +40,7 @@ export const MainView = () => {
         "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies",
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${getTokenFromLocalStorage()}`,
           },
         }
       );
@@ -59,11 +59,10 @@ export const MainView = () => {
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user", userData);
     localStorage.setItem("token", authToken);
     fetchMovies();
-    // Navigate to the movies list after successful login
-    window.location.href = "/movies";
+    setFavorites(getFavoritesFromLocalStorage());
   };
 
   const handleLogout = () => {
@@ -71,11 +70,13 @@ export const MainView = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
+    setFavorites([]);
+    localStorage.removeItem("favorites");
   };
 
   const handleUserUpdate = (updatedUser) => {
     setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    localStorage.setItem("user", updatedUser);
   };
 
   const handleUserDeregister = () => {
@@ -83,47 +84,19 @@ export const MainView = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
+    setFavorites([]);
+    localStorage.removeItem("favorites");
   };
 
-  const handleAddFavorite = async (movieId) => {
-    try {
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/movies/${movieId}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to add to favorites");
-      }
-      // Optionally update local state or refetch favorites
-    } catch (error) {
-      console.error("Error adding to favorites:", error);
+  const handleAddToFavorites = (movie, addToFavorites) => {
+    let updatedFavorites;
+    if (addToFavorites) {
+      updatedFavorites = [...favorites, movie];
+    } else {
+      updatedFavorites = favorites.filter((fav) => fav._id !== movie._id);
     }
-  };
-
-  const handleRemoveFavorite = async (movieId) => {
-    try {
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${user.username}/movies/${movieId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to remove from favorites");
-      }
-      // Optionally update local state or refetch favorites
-    } catch (error) {
-      console.error("Error removing from favorites:", error);
-    }
+    setFavorites(updatedFavorites);
+    setFavoritesInLocalStorage(updatedFavorites);
   };
 
   const renderMovieList = () => {
@@ -140,8 +113,7 @@ export const MainView = () => {
       <MovieCard
         key={movie._id}
         movie={movie}
-        onAddFavorite={handleAddFavorite}
-        onRemoveFavorite={handleRemoveFavorite}
+        onAddToFavorites={handleAddToFavorites}
       />
     ));
   };
@@ -150,37 +122,50 @@ export const MainView = () => {
     <Router>
       <NavigationBar user={user} onLogout={handleLogout} />
       <Routes>
-        <Route path="/" element={<LoginView onLoggedIn={handleLogin} />} />
+        <Route
+          path="/"
+          element={
+            user ? (
+              <Navigate to="/movies" />
+            ) : (
+              <LoginView onLoggedIn={handleLogin} />
+            )
+          }
+        />
         <Route path="/signup" element={<SignupView onSignup={handleLogin} />} />
-        {user && (
-          <Route
-            path="/movies"
-            element={
+        <Route
+          path="/movies"
+          element={
+            user ? (
               <Row xs={1} sm={2} md={3} lg={4} xl={5} className="g-4">
                 {renderMovieList()}
               </Row>
-            }
-          />
-        )}
-        {user && (
-          <Route
-            path="/movies/:title"
-            element={<MovieView movies={movies} />}
-          />
-        )}
-        {user && (
-          <Route
-            path="/profile"
-            element={
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
+        <Route
+          path="/movies/:title"
+          element={user ? <MovieView movies={movies} /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/profile"
+          element={
+            user ? (
               <ProfileView
                 user={user}
                 movies={movies}
+                favorites={favorites}
                 onUserUpdate={handleUserUpdate}
                 onUserDeregister={handleUserDeregister}
+                onAddToFavorites={handleAddToFavorites}
               />
-            }
-          />
-        )}
+            ) : (
+              <Navigate to="/" />
+            )
+          }
+        />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

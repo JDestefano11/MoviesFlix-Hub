@@ -3,10 +3,11 @@ import { Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./login-view.scss";
 
-export const LoginView = ({ onLoggedIn, switchToSignup }) => {
+export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [isLoggedIn, setLoggedIn] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -28,24 +29,29 @@ export const LoginView = ({ onLoggedIn, switchToSignup }) => {
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(
-          "Invalid credentials. Please check your username and password."
-        );
+        throw new Error("Login failed");
       }
 
-      const data = await response.json();
-      const { token } = data;
+      const { token, user } = data;
 
-      localStorage.setItem("user", JSON.stringify({ username }));
-      localStorage.setItem("token", token);
+      // Use onLoggedIn to handle local storage and state updates
+      onLoggedIn(user, token);
 
-      onLoggedIn({ username }, token);
+      // Set isLoggedIn state to true upon successful login
+      setLoggedIn(true);
     } catch (error) {
-      setError(error.message || "Login failed. Please try again.");
+      setError("Login failed. Please try again.");
       console.error("Login error:", error);
     }
   };
+
+  // Render login form or redirect to /movies if isLoggedIn is true
+  if (isLoggedIn) {
+    return <Navigate to="/movies" />;
+  }
 
   return (
     <div className="login-view">
@@ -83,7 +89,6 @@ export const LoginView = ({ onLoggedIn, switchToSignup }) => {
 
         <div className="signup-link">
           <span className="signup-text">New to MoviesFlix? </span>
-          {/* Link to SignupView */}
           <Link to="/signup" className="signup-link-text">
             Sign up now.
           </Link>
