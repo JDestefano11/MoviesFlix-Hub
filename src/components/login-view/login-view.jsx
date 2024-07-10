@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link, Navigate } from "react-router-dom";
 import "./login-view.scss";
@@ -43,8 +43,14 @@ export const LoginView = ({ onLoggedIn }) => {
       });
   };
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      <Navigate to="/movies" replace />;
+    }
+  }, [isLoggedIn]);
+
   if (isLoggedIn) {
-    return <Navigate to="/movies" />;
+    return <Navigate to="/movies" replace />;
   }
 
   return (
