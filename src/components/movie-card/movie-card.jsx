@@ -4,75 +4,79 @@ import { Button, Card } from "react-bootstrap";
 import PropTypes from "prop-types";
 import "./movie-card.scss";
 
-const API_URL = "https://moviesflix-hub-fca46ebf9888.herokuapp.com"; // Replace with your backend URL
-
-export const MovieCard = ({
-  movie,
-  onAddFavorite,
-  onRemoveFavorite,
-  username,
-  authToken,
-}) => {
+export const MovieCard = ({ movie, username, authToken }) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    setIsFavorite(checkIsFavorite(movie._id));
-  }, [movie._id, onRemoveFavorite]);
+    checkIsFavorite();
+  }, []);
 
-  const checkIsFavorite = (movieId) => {
-    if (onRemoveFavorite && Array.isArray(onRemoveFavorite)) {
-      return onRemoveFavorite.some((fav) => fav._id === movieId);
+  const checkIsFavorite = () => {
+    const user = localStorage.getItem("user");
+
+    if (
+      user &&
+      user.FavoriteMovies &&
+      user.FavoriteMovies.includes(movie._id)
+    ) {
+      setIsFavorite(true);
+    } else {
+      setIsFavorite(false);
     }
-    return false;
   };
 
-  const handleAddFavorite = async () => {
-    try {
-      console.log("Adding movie to favorites:", movie);
-      setIsFavorite(true);
-      const response = await fetch(`${API_URL}/users/${username}/favorites`, {
+  const handleAddFavorite = () => {
+    fetch(
+      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/movies/${movie._id}`,
+      {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ movieId: movie._id }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add to favorites");
       }
-
-      onAddFavorite(movie);
-    } catch (error) {
-      console.error("Failed to add to favorites:", error);
-      // Handle error (e.g., show an error message to the user)
-    }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to add favorite movie");
+        }
+      })
+      .then((user) => {
+        localStorage.setItem("user", JSON.stringify(user));
+        setIsFavorite(true);
+      })
+      .catch((error) => {
+        alert("Failed to add favorite movie: " + error.message);
+      });
   };
 
-  const handleRemoveFavorite = async () => {
-    try {
-      console.log("Removing movie from favorites:", movie._id);
-      setIsFavorite(false);
-      const response = await fetch(
-        `${API_URL}/users/${username}/favorites/${movie._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to remove from favorites");
+  const handleRemoveFavorite = () => {
+    fetch(
+      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/movies/${movie._id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
       }
-
-      onRemoveFavorite(movie._id);
-    } catch (error) {
-      console.error("Failed to remove from favorites:", error);
-      // Handle error (e.g., show an error message to the user)
-    }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Failed to remove favorite movie");
+        }
+      })
+      .then((user) => {
+        localStorage.setItem("user", JSON.stringify(user));
+        setIsFavorite(false);
+      })
+      .catch((error) => {
+        alert("Failed to remove favorite movie: " + error.message);
+      });
   };
 
   return (
@@ -108,14 +112,12 @@ export const MovieCard = ({
 MovieCard.propTypes = {
   movie: PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    ImageUrl: PropTypes.string.isRequired,
+    ImageUrl: PropTypes.string,
     Title: PropTypes.string.isRequired,
     Genre: PropTypes.shape({
       Name: PropTypes.string.isRequired,
     }).isRequired,
   }).isRequired,
-  onAddFavorite: PropTypes.func.isRequired,
-  onRemoveFavorite: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
   authToken: PropTypes.string.isRequired,
 };

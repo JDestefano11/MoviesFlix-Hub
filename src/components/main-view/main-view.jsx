@@ -19,18 +19,30 @@ import {
   setFavoritesInLocalStorage,
 } from "../utilis/localstorage";
 
-export const MainView = () => {
+const MainView = () => {
   const [user, setUser] = useState(getUserFromLocalStorage());
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState(getFavoritesFromLocalStorage());
   const [isLoadingMovies, setLoadingMovies] = useState(false);
   const [error, setError] = useState(null);
+  const [username, setUsername] = useState("");
+  const [authToken, setAuthToken] = useState("");
 
   useEffect(() => {
     if (user) {
       fetchMovies();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Example of setting username and authToken from localStorage or other source
+    const storedUsername = localStorage.getItem("username");
+    const storedAuthToken = localStorage.getItem("authToken");
+    if (storedUsername && storedAuthToken) {
+      setUsername(storedUsername);
+      setAuthToken(storedAuthToken);
+    }
+  }, []);
 
   const fetchMovies = async () => {
     setLoadingMovies(true);
@@ -59,14 +71,18 @@ export const MainView = () => {
 
   const handleLogin = (userData, authToken) => {
     setUser(userData);
-    localStorage.setItem("user", userData);
+    localStorage.setItem("user", JSON.stringify(userData)); // Store user as JSON string
     localStorage.setItem("token", authToken);
+    setUsername(userData.username); // Assuming username is part of userData
+    setAuthToken(authToken);
     fetchMovies();
     setFavorites(getFavoritesFromLocalStorage());
   };
 
   const handleLogout = () => {
     setUser(null);
+    setUsername("");
+    setAuthToken("");
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
@@ -76,11 +92,14 @@ export const MainView = () => {
 
   const handleUserUpdate = (updatedUser) => {
     setUser(updatedUser);
-    localStorage.setItem("user", updatedUser);
+    localStorage.setItem("user", JSON.stringify(updatedUser)); // Store user as JSON string
+    setUsername(updatedUser.username); // Assuming username is part of updatedUser
   };
 
   const handleUserDeregister = () => {
     setUser(null);
+    setUsername("");
+    setAuthToken("");
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     setMovies([]);
@@ -100,7 +119,7 @@ export const MainView = () => {
   };
 
   const handleRemoveFromFavorites = (movieId) => {
-    let updatedFavorites = favorites.filter((fav) => fav !== movieId);
+    let updatedFavorites = favorites.filter((fav) => fav._id !== movieId);
     setFavorites(updatedFavorites);
     setFavoritesInLocalStorage(updatedFavorites);
   };
@@ -119,8 +138,8 @@ export const MainView = () => {
       <MovieCard
         key={movie._id}
         movie={movie}
-        onAddFavorite={handleAddToFavorites}
-        onRemoveFavorite={handleRemoveFromFavorites}
+        onAddFavorite={() => handleAddToFavorites(movie, true)}
+        onRemoveFavorite={() => handleRemoveFromFavorites(movie._id)}
       />
     ));
   };
