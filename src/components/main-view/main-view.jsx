@@ -46,12 +46,10 @@ export const MainView = () => {
       <NavigationBar user={user} onLoggedOut={onLoggedOut} />
       <Row className="justify-content-md-center">
         <Routes>
-          {/* Route for /signup */}
           <Route
             path="/signup"
             element={user ? <Navigate to="/" /> : <SignupView />}
           />
-          {/* Route for /login */}
           <Route
             path="/login"
             element={
@@ -67,7 +65,6 @@ export const MainView = () => {
               )
             }
           />
-          {/* Route for viewing a specific movie */}
           <Route
             path="/movies/:title"
             element={
@@ -82,7 +79,6 @@ export const MainView = () => {
               )
             }
           />
-          {/* Route for the home page */}
           <Route
             path="/"
             element={
@@ -101,7 +97,6 @@ export const MainView = () => {
               )
             }
           />
-          {/* Route for the profile page */}
           <Route
             path="/profile"
             element={
