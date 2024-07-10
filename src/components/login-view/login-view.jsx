@@ -28,7 +28,7 @@ export const LoginView = ({ onLoggedIn }) => {
         if (!response.ok) {
           throw new Error("Login failed");
         }
-        return response.json(); // parse JSON from the response
+        return response.json();
       })
       .then((data) => {
         console.log("Login response: ", data);
