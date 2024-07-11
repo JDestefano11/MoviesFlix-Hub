@@ -11,14 +11,26 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 export const MainView = () => {
   const storedUser = localStorage.getItem("user");
   const storedToken = localStorage.getItem("token");
-  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
-  const [token, setToken] = useState(storedToken ? storedToken : null);
+
+  console.log("Stored User:", storedUser);
+  console.log("Stored Token:", storedToken);
+
+  const [user, setUser] = useState(() => {
+    try {
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user:", error);
+      return null; // Handle gracefully, possibly by providing a default user object
+    }
+  });
+  const [token, setToken] = useState(storedToken || null);
+
+  console.log("User State:", user);
+  console.log("Token State:", token);
 
   const handleLoggedIn = (user, token) => {
     setUser(user);
     setToken(token);
-    // localStorage.setItem("user", JSON.stringify(user));
-    // localStorage.setItem("token", token);
   };
 
   const handleLoggedOut = () => {
