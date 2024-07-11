@@ -2,100 +2,64 @@ import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const saveFavoritesToStorage = (favorites) => {
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-};
-
-export const MovieCard = ({ movie, token }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    if (!token) {
-      console.warn("Token is undefined. Unable to fetch favorite status.");
-      return;
-    }
-
-    // Check if the movie is already a favorite
-    const checkFavoriteStatus = async () => {
-      try {
-        const response = await fetch(
-          `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/me/favorites/${movie._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          setIsFavorite(true);
-        } else {
-          setIsFavorite(false);
-        }
-      } catch (error) {
-        console.error("Error checking favorite status:", error);
-      }
-    };
-
-    checkFavoriteStatus();
-  }, [movie._id, token]);
+export const MovieCard = ({
+  movie,
+  username,
+  authToken,
+  favorites,
+  updateFavorites,
+}) => {
+  const [isFavorite, setIsFavorite] = useState(
+    favorites.some((fav) => fav._id === movie._id)
+  );
 
   const handleAddFavorite = async () => {
     try {
-      if (!token) {
-        throw new Error("Token is undefined. Cannot add to favorites.");
-      }
-
       const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/me/favorites/${movie._id}`,
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/favorites/${movie._id}`,
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         }
       );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to add movie to favorites: ${response.statusText}`
-        );
+      if (response.ok) {
+        setIsFavorite(true);
+        const updatedFavorites = [...favorites, movie];
+        updateFavorites(updatedFavorites);
+        alert("Movie added to favorites!");
+      } else {
+        alert("Failed to add movie to favorites.");
       }
-
-      setIsFavorite(true);
-      alert("Movie added to favorites!");
     } catch (error) {
       console.error("Error adding favorite:", error);
-      alert(error.message);
     }
   };
 
   const handleRemoveFavorite = async () => {
     try {
-      if (!token) {
-        throw new Error("Token is undefined. Cannot remove from favorites.");
-      }
-
       const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/me/favorites/${movie._id}`,
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/favorites/${movie._id}`,
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${authToken}`,
           },
         }
       );
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to remove movie from favorites: ${response.statusText}`
+      if (response.ok) {
+        setIsFavorite(false);
+        const updatedFavorites = favorites.filter(
+          (fav) => fav._id !== movie._id
         );
+        updateFavorites(updatedFavorites);
+        alert("Movie removed from favorites!");
+      } else {
+        alert("Failed to remove movie from favorites.");
       }
-
-      setIsFavorite(false);
-      alert("Movie removed from favorites!");
     } catch (error) {
       console.error("Error removing favorite:", error);
-      alert(error.message);
     }
   };
 

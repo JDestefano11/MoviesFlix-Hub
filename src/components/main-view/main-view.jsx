@@ -21,6 +21,19 @@ export const MainView = () => {
   });
   const [token, setToken] = useState(storedToken || null);
   const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+
+  const updateFavorites = (newFavorites) => {
+    setFavorites(newFavorites);
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+  };
+
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
 
   const handleLoggedIn = (user, token) => {
     setUser(user);
@@ -108,6 +121,8 @@ export const MainView = () => {
                           username={user.username}
                           authToken={token}
                           token={token}
+                          favorites={favorites}
+                          updateFavorites={updateFavorites}
                         />
                       </Col>
                     ))
