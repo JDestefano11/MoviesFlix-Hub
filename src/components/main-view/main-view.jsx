@@ -11,22 +11,16 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 export const MainView = () => {
   const storedUser = localStorage.getItem("user");
   const storedToken = localStorage.getItem("token");
-
-  console.log("Stored User:", storedUser);
-  console.log("Stored Token:", storedToken);
-
   const [user, setUser] = useState(() => {
     try {
       return storedUser ? JSON.parse(storedUser) : null;
     } catch (error) {
       console.error("Error parsing stored user:", error);
-      return null; // Handle gracefully, possibly by providing a default user object
+      return null;
     }
   });
   const [token, setToken] = useState(storedToken || null);
-
-  console.log("User State:", user);
-  console.log("Token State:", token);
+  const [movies, setMovies] = useState([]);
 
   const handleLoggedIn = (user, token) => {
     setUser(user);
@@ -108,7 +102,7 @@ export const MainView = () => {
                   ) : (
                     movies.map((movie) => (
                       <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                        <MovieCard movie={movie} />
+                        <MovieCard key={movie._id} movie={movie} />
                       </Col>
                     ))
                   )
