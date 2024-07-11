@@ -2,74 +2,37 @@ import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-export const MovieCard = ({
-  movie,
-  onAddFavorite,
-  onRemoveFavorite,
-  username,
-  authToken,
-}) => {
+const getFavoritesFromStorage = () => {
+  const favorites = localStorage.getItem("favorites");
+  return favorites ? JSON.parse(favorites) : [];
+};
+
+const saveFavoritesToStorage = (favorites) => {
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+};
+
+export const MovieCard = ({ movie }) => {
+  const [favorites, setFavorites] = useState(getFavoritesFromStorage());
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
-    setIsFavorite(checkIsFavorite(movie._id));
-  }, [movie._id, onRemoveFavorite]);
+    setIsFavorite(favorites.some((fav) => fav._id === movie._id));
+  }, [favorites, movie._id]);
 
-  const checkIsFavorite = (movieId) => {
-    if (onRemoveFavorite && Array.isArray(onRemoveFavorite)) {
-      return onRemoveFavorite.some((fav) => fav._id === movieId);
-    }
-    return false;
-  };
-
-  const handleAddFavorite = async () => {
-    try {
-      console.log("Adding movie to favorites:", movie);
+  const handleAddFavorite = () => {
+    if (!favorites.some((fav) => fav._id === movie._id)) {
+      const updatedFavorites = [...favorites, movie];
+      setFavorites(updatedFavorites);
+      saveFavoritesToStorage(updatedFavorites);
       setIsFavorite(true);
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com//users/${username}/movies/{movie._id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({ movieId: movie._id }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to add to favorites");
-      }
-
-      onAddFavorite(movie);
-    } catch (error) {
-      console.error("Failed to add to favorites:", error);
     }
   };
 
-  const handleRemoveFavorite = async () => {
-    try {
-      console.log("Removing movie from favorites:", movie._id);
-      setIsFavorite(false);
-      const response = await fetch(
-        `https://moviesflix-hub-fca46ebf9888.herokuapp.com//users/${username}/movies/:movieId/users/${username}/movies/{movie._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to remove from favorites");
-      }
-
-      onRemoveFavorite(movie._id);
-    } catch (error) {
-      console.error("Failed to remove from favorites:", error);
-    }
+  const handleRemoveFavorite = () => {
+    const updatedFavorites = favorites.filter((fav) => fav._id !== movie._id);
+    setFavorites(updatedFavorites);
+    saveFavoritesToStorage(updatedFavorites);
+    setIsFavorite(false);
   };
 
   return (
@@ -85,15 +48,12 @@ export const MovieCard = ({
         <Link to={`/movies/${movie._id}`}>
           <Button variant="link">View Details</Button>
         </Link>
-        {isFavorite ? (
-          <Button variant="danger" onClick={handleRemoveFavorite}>
-            Remove from Favorites
-          </Button>
-        ) : (
-          <Button variant="primary" onClick={handleAddFavorite}>
-            Add to Favorites
-          </Button>
-        )}
+        <Button
+          variant={isFavorite ? "danger" : "primary"}
+          onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+        >
+          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+        </Button>
       </Card.Body>
     </Card>
   );

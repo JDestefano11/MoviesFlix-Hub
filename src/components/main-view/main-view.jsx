@@ -82,7 +82,7 @@ export const MainView = () => {
                 )
               }
             />
-            {/* Route for ProfileView */}
+            {/* Route for MovieView */}
             <Route
               path="/movies/:movieId"
               element={
@@ -102,7 +102,12 @@ export const MainView = () => {
                   ) : (
                     movies.map((movie) => (
                       <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                        <MovieCard key={movie._id} movie={movie} />
+                        <MovieCard
+                          key={movie._id}
+                          movie={movie}
+                          username={user.username}
+                          authToken={token}
+                        />
                       </Col>
                     ))
                   )
