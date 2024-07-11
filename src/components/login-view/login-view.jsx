@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Button, Container, Row } from "react-bootstrap";
 import "./login-view.scss";
+import { useNavigate } from "react-router-dom";
 
 export const LoginView = ({ onLoggedIn }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
     const data = {
@@ -16,38 +17,25 @@ export const LoginView = ({ onLoggedIn }) => {
       password: password,
     };
 
-    try {
-      const response = await fetch(
-        "https://moviesflix-hub-fca46ebf9888.herokuapp.com/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
-
-      const responseData = await response.json();
-      console.log("Login response:", responseData);
-
-      if (response.ok) {
-        localStorage.setItem("user", JSON.stringify(responseData.user));
-        localStorage.setItem("token", responseData.token);
-        onLoggedIn(responseData.user, responseData.token);
-        navigate("/movies");
-      } else {
-        // Handle different HTTP status codes
-        if (response.status === 401) {
-          alert("Invalid username or password");
+    fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem("token", data.token);
+          onLoggedIn(data.user, data.token);
+          navigate("/movies");
         } else {
-          alert("Login failed. Please try again.");
+          alert("No such user");
         }
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Something went wrong. Please try again.");
-    }
+      })
+      .catch((e) => {
+        alert("Something went wrong");
+      });
   };
 
   return (
