@@ -9,16 +9,23 @@ import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 export const MainView = () => {
-  const storedToken = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
-  const [movies, setMovies] = useState([]);
-  const [user, setUser] = useState(storedUser ? storedUser : null);
-  const [token, setToken] = useState(storedToken || null);
+  const storedToken = localStorage.getItem("token");
+  const [user, setUser] = useState(storedUser ? JSON.parse(storedUser) : null);
+  const [token, setToken] = useState(storedToken ? storedToken : null);
 
-  const onLoggedOut = () => {
+  const handleLoggedIn = (user, token) => {
+    setUser(user);
+    setToken(token);
+    // localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("token", token);
+  };
+
+  const handleLoggedOut = () => {
     setUser(null);
     setToken(null);
-    localStorage.clear();
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   useEffect(() => {
@@ -51,7 +58,7 @@ export const MainView = () => {
 
   return (
     <BrowserRouter>
-      <NavigationBar user={user} onLoggedOut={onLoggedOut} />
+      <NavigationBar user={user} onLoggedOut={handleLoggedOut} />
       <Container>
         <Row className="justify-content-md-center">
           <Routes>
@@ -65,17 +72,11 @@ export const MainView = () => {
                 user ? (
                   <Navigate to="/" />
                 ) : (
-                  <LoginView
-                    onLoggedIn={(user, token) => {
-                      setUser(user);
-                      setToken(token);
-                      localStorage.setItem("user", JSON.stringify(user));
-                      localStorage.setItem("token", token);
-                    }}
-                  />
+                  <LoginView onLoggedIn={handleLoggedIn} />
                 )
               }
             />
+            {/* Route for ProfileView */}
             <Route
               path="/movies/:movieId"
               element={
@@ -114,7 +115,7 @@ export const MainView = () => {
                         user={user}
                         token={token}
                         setUser={setUser}
-                        onDelete={onLoggedOut}
+                        onDelete={handleLoggedOut}
                         movies={movies}
                       />
                     </Row>
