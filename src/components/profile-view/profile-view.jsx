@@ -13,6 +13,9 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("User:", user);
+    console.log("Favorite Movies:", favoriteMovies);
+
     if (user && user.favoriteMovies) {
       const fetchFavoriteMovies = async () => {
         try {
@@ -24,9 +27,10 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
           );
           const movies = await response.json();
           const favoriteMoviesList = movies.filter((movie) =>
-            user.favoriteMovies.includes(movie.movieId)
+            user.favoriteMovies.includes(movie._id)
           );
           setFavoriteMovies(favoriteMoviesList);
+          console.log("Updated favorite movies:", favoriteMoviesList);
         } catch (error) {
           console.error("Error fetching favorite movies:", error);
         }
@@ -113,13 +117,20 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   };
 
   const renderFavoriteMovies = () => {
+    console.log("Rendering favorite movies:", favoriteMovies);
     if (!favoriteMovies || favoriteMovies.length === 0) {
       return <div>No favorite movies added.</div>;
     }
 
     return favoriteMovies.map((movie) => (
-      <Col key={movie.movieId} className="mb-4">
-        <MovieCard movie={movie} showButton={false} />
+      <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
+        <MovieCard
+          movie={movie}
+          username={user.username}
+          authToken={token}
+          favorites={favoriteMovies}
+          updateFavorites={setFavoriteMovies}
+        />
       </Col>
     ));
   };
@@ -220,9 +231,9 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
       </Row>
 
       <Row className="mt-4">
-        <Col md={8}>
+        <Col>
           <h3>Favorite Movies</h3>
-          <Row>{renderFavoriteMovies()}</Row>
+          {favoriteMovies.length > 0 && <Row>{renderFavoriteMovies()}</Row>}
         </Col>
       </Row>
     </Container>

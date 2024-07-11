@@ -144,6 +144,8 @@ export const MainView = () => {
                         setUser={setUser}
                         onDelete={handleLoggedOut}
                         movies={movies}
+                        favorites={favorites}
+                        updateFavorites={updateFavorites}
                       />
                     </Row>
                   </Col>
