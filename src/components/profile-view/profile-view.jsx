@@ -8,9 +8,7 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState(user.email);
-  const [birthdate, setBirthdate] = useState(
-    user.BirthDate ? user.BirthDate.substring(0, 10) : ""
-  );
+  const [birthday, setBirthday] = useState(user.birthday || new Date());
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const navigate = useNavigate();
 
@@ -26,7 +24,7 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
           );
           const movies = await response.json();
           const favoriteMoviesList = movies.filter((movie) =>
-            user.favoriteMovies.includes(movie._id)
+            user.favoriteMovies.includes(movie.movieId)
           );
           setFavoriteMovies(favoriteMoviesList);
         } catch (error) {
@@ -51,6 +49,8 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
       .then((response) => {
         if (response.ok) {
           setUser(null);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
           alert("Your account has been deleted");
           onLoggedOut();
         } else {
@@ -118,7 +118,7 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
     }
 
     return favoriteMovies.map((movie) => (
-      <Col key={movie._id} className="mb-4">
+      <Col key={movie.movieId} className="mb-4">
         <MovieCard movie={movie} showButton={false} />
       </Col>
     ));
@@ -192,32 +192,33 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
               <Col sm={10}>
                 <Form.Control
                   type="date"
-                  value={birthdate}
+                  value={birthday}
                   onChange={(e) => setBirthday(e.target.value)}
                 />
               </Col>
             </Form.Group>
 
             <Button type="submit" className="w-100 mb-3">
-              UPDATE
-            </Button>
-
-            <Button
-              variant="secondary"
-              className="w-100 mb-4"
-              onClick={() => navigate("/")}
-            >
-              CANCEL
-            </Button>
-
-            <hr />
-
-            <Button variant="danger" className="w-100" onClick={handleDelete}>
-              REMOVE
+              Update Profile
             </Button>
           </Form>
+
+          <Button
+            variant="danger"
+            className="w-100 mb-3"
+            onClick={() => {
+              if (
+                window.confirm("Are you sure you want to delete your account?")
+              ) {
+                handleDelete();
+              }
+            }}
+          >
+            Delete Account
+          </Button>
         </Col>
       </Row>
+
       <Row className="mt-4">
         <Col md={8}>
           <h3>Favorite Movies</h3>
