@@ -72,6 +72,8 @@ export const MovieCard = ({
       />
       <Card.Body>
         <Card.Title>{movie.Title}</Card.Title>
+        <Card.Text>Rating: {movie.Rating}</Card.Text>
+        <Card.Text>Year: {movie.Year}</Card.Text>
         <Card.Text>Genre: {movie.Genre.Name}</Card.Text>
         <Link to={`/movies/${movie._id}`}>
           <Button variant="link">View Details</Button>
