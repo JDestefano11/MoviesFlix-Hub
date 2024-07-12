@@ -1,73 +1,90 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Card, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { Button, Card } from "react-bootstrap";
-import PropTypes from "prop-types";
-import "./movie-card.scss";
 
-export const MovieCard = ({ movie, onAddToFavorites, showButton = true }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+export const MovieCard = ({
+  movie,
+  username,
+  authToken,
+  favorites,
+  updateFavorites,
+}) => {
+  const [isFavorite, setIsFavorite] = useState(
+    favorites.some((fav) => fav._id === movie._id)
+  );
 
-  useEffect(() => {
-    const favoriteMovies = JSON.parse(
-      localStorage.getItem("favoriteMovies") || "[]"
-    );
-    if (favoriteMovies.includes(movie._id)) {
-      setIsFavorite(true);
+  const handleAddFavorite = async () => {
+    try {
+      const response = await fetch(
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/favorites/${movie._id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setIsFavorite(true);
+        const updatedFavorites = [...favorites, movie];
+        updateFavorites(updatedFavorites);
+        alert("Movie added to favorites!");
+      } else {
+        alert("Failed to add movie to favorites.");
+      }
+    } catch (error) {
+      console.error("Error adding favorite:", error);
     }
-  }, [movie._id]);
+  };
 
-  const handleToggleFavorite = () => {
-    const favoriteMovies = JSON.parse(
-      localStorage.getItem("favoriteMovies") || "[]"
-    );
-    if (isFavorite) {
-      favoriteMovies.splice(favoriteMovies.indexOf(movie._id), 1);
-    } else {
-      favoriteMovies.push(movie._id);
+  const handleRemoveFavorite = async () => {
+    try {
+      const response = await fetch(
+        `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/favorites/${movie._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setIsFavorite(false);
+        const updatedFavorites = favorites.filter(
+          (fav) => fav._id !== movie._id
+        );
+        updateFavorites(updatedFavorites);
+        alert("Movie removed from favorites!");
+      } else {
+        alert("Failed to remove movie from favorites.");
+      }
+    } catch (error) {
+      console.error("Error removing favorite:", error);
     }
-    localStorage.setItem("favoriteMovies", JSON.stringify(favoriteMovies));
-    setIsFavorite(!isFavorite);
-    onAddToFavorites(movie, !isFavorite);
   };
 
   return (
-    <Card className="movie-card">
+    <Card>
       <Card.Img
         variant="top"
         src={movie.ImageUrl || "default-image-url.png"}
         alt={movie.Title}
-        className="movie-image"
       />
       <Card.Body>
         <Card.Title>{movie.Title}</Card.Title>
+        <Card.Text>Rating: {movie.Rating}</Card.Text>
+        <Card.Text>Year: {movie.Year}</Card.Text>
         <Card.Text>Genre: {movie.Genre.Name}</Card.Text>
-        <Link to={`/movies/${movie._id}`} className="movie-link">
-          <Button variant="link" className="movie-button">
-            View Details
-          </Button>
+        <Link to={`/movies/${movie._id}`}>
+          <Button variant="link">View Details</Button>
         </Link>
-        {showButton && (
-          <Button
-            onClick={handleToggleFavorite}
-            className={`movie-button ${isFavorite ? "favorite" : ""}`}
-          >
-            {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-          </Button>
-        )}
+        <Button
+          variant={isFavorite ? "danger" : "primary"}
+          onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+        >
+          {isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+        </Button>
       </Card.Body>
     </Card>
   );
-};
-
-MovieCard.propTypes = {
-  movie: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    ImageUrl: PropTypes.string.isRequired,
-    Title: PropTypes.string.isRequired,
-    Genre: PropTypes.shape({
-      Name: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
-  onAddToFavorites: PropTypes.func.isRequired,
-  showButton: PropTypes.bool,
 };

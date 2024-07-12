@@ -1,21 +1,16 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import "./movie-view.scss";
+import { useParams, useNavigate } from "react-router-dom";
 
 export const MovieView = ({ movies }) => {
   const { movieId } = useParams();
   const navigate = useNavigate();
-  const movie = movies.find((m) => m._id === movieId);
 
-  if (!movie) return <div>Movie not found</div>;
+  const movie = movies.find((movie) => movie._id === movieId);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const options = { year: "numeric", month: "long", day: "numeric" };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  if (!movie) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="movie-view">
@@ -58,7 +53,7 @@ export const MovieView = ({ movies }) => {
                   </p>
                   <p>
                     <strong>Director's Birthdate:</strong>{" "}
-                    {formatDate(movie.Director.BirthDate)}
+                    {movie.Director.BirthDate}
                   </p>
                   <p>
                     <strong>Director's Birthplace:</strong>{" "}
@@ -79,25 +74,4 @@ export const MovieView = ({ movies }) => {
       </Container>
     </div>
   );
-};
-
-MovieView.propTypes = {
-  movies: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      ImageUrl: PropTypes.string.isRequired,
-      Title: PropTypes.string.isRequired,
-      Description: PropTypes.string.isRequired,
-      Genre: PropTypes.shape({
-        Name: PropTypes.string.isRequired,
-        Description: PropTypes.string,
-      }),
-      Director: PropTypes.shape({
-        Name: PropTypes.string.isRequired,
-        Occupation: PropTypes.string,
-        BirthDate: PropTypes.string,
-        BirthPlace: PropTypes.string,
-      }),
-    })
-  ).isRequired,
 };

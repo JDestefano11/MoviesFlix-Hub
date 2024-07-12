@@ -3,7 +3,7 @@ import { Navbar, Container, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./navigation-bar.scss";
 
-export const NavigationBar = ({ user, onLogout }) => {
+export const NavigationBar = ({ user, onLoggedOut }) => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
       {" "}
@@ -34,7 +34,7 @@ export const NavigationBar = ({ user, onLogout }) => {
                 </Nav.Link>
                 <Button
                   variant="outline-info"
-                  onClick={onLogout}
+                  onClick={onLoggedOut}
                   style={{
                     padding: "0.375rem 0.75rem",
                     minWidth: "7rem",

@@ -1,173 +1,166 @@
 import React, { useState, useEffect } from "react";
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    Navigate,
-} from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
 import { MovieView } from "../movie-view/movie-view";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
-import { Row, Spinner, Alert } from "react-bootstrap";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { Row, Col, Container } from "react-bootstrap";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 export const MainView = () => {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-    const [movies, setMovies] = useState([]);
-    const [favorites, setFavorites] = useState([]);
-    const [isLoadingMovies, setLoadingMovies] = useState(false);
-    const [error, setError] = useState(null);
+  const storedUser = localStorage.getItem("user");
+  const storedToken = localStorage.getItem("token");
+  const [user, setUser] = useState(() => {
+    try {
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user:", error);
+      return null;
+    }
+  });
+  const [token, setToken] = useState(storedToken || null);
+  const [movies, setMovies] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
-    useEffect(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-        if (storedUser) {
-            setUser(storedUser);
-            const storedFavorites = JSON.parse(localStorage.getItem("favorites"));
-            if (storedFavorites) {
-                setFavorites(storedFavorites);
-            }
-        }
-    }, []);
+  const updateFavorites = (newFavorites) => {
+    setFavorites(newFavorites);
+    localStorage.setItem("favorites", JSON.stringify(newFavorites));
+  };
 
-    useEffect(() => {
-        if (user) {
-            fetchMovies();
-        }
-    }, [user]);
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favorites");
+    if (storedFavorites) {
+      setFavorites(JSON.parse(storedFavorites));
+    }
+  }, []);
+
+  const handleLoggedIn = (user, token) => {
+    setUser(user);
+    setToken(token);
+  };
+
+  const handleLoggedOut = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+  };
+
+  useEffect(() => {
+    if (!token) return;
 
     const fetchMovies = async () => {
-        setLoadingMovies(true);
-        setError(null);
-        try {
-            const response = await fetch(
-                "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies",
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-            if (!response.ok) {
-                throw new Error("Failed to fetch movies");
-            }
-            const data = await response.json();
-            setMovies(data);
-        } catch (error) {
-            console.error("Error fetching movies:", error);
-            setError("Failed to load movies. Please try again later.");
-        } finally {
-            setLoadingMovies(false);
+      try {
+        const response = await fetch(
+          "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch movies");
         }
+
+        const data = await response.json();
+        setMovies(data);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
     };
 
-    const handleLogin = (userData, authToken) => {
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
-        localStorage.setItem("token", authToken);
-        fetchMovies();
-        const storedFavorites = JSON.parse(localStorage.getItem("favorites"));
-        if (storedFavorites) {
-            setFavorites(storedFavorites);
-        }
-        // Navigate to the movies list after successful login
-        window.location.href = "/movies";
-    };
+    fetchMovies();
+  }, [token]);
 
-    const handleLogout = () => {
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        setMovies([]);
-        setFavorites([]);
-        localStorage.removeItem("favorites");
-    };
-
-    const handleUserUpdate = (updatedUser) => {
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-    };
-
-    const handleUserDeregister = () => {
-        setUser(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-        setMovies([]);
-        setFavorites([]);
-        localStorage.removeItem("favorites");
-    };
-
-    const handleAddToFavorites = (movie, addToFavorites) => {
-        if (addToFavorites) {
-            const updatedFavorites = [...favorites, movie];
-            setFavorites(updatedFavorites);
-            localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-        } else {
-            const updatedFavorites = favorites.filter((fav) => fav._id !== movie._id);
-            setFavorites(updatedFavorites);
-            localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-        }
-    };
-
-    const renderMovieList = () => {
-        if (isLoadingMovies) {
-            return <Spinner animation="border" />;
-        }
-        if (error) {
-            return <Alert variant="danger">{error}</Alert>;
-        }
-        if (movies.length === 0) {
-            return <div>The movie list is empty</div>;
-        }
-        return movies.map((movie) => (
-            <MovieCard
-                key={movie._id}
-                movie={movie}
-                onAddToFavorites={handleAddToFavorites}
+  return (
+    <BrowserRouter>
+      <NavigationBar user={user} onLoggedOut={handleLoggedOut} />
+      <Container>
+        <Row className="justify-content-md-center">
+          <Routes>
+            <Route
+              path="/signup"
+              element={user ? <Navigate to="/" /> : <SignupView />}
             />
-        ));
-    };
-
-    return (
-        <Router>
-            <NavigationBar user={user} onLogout={handleLogout} />
-            <Routes>
-                <Route path="/" element={<LoginView onLoggedIn={handleLogin} />} />
-                <Route path="/signup" element={<SignupView onSignup={handleLogin} />} />
-                {user && (
-                    <Route
-                        path="/movies"
-                        element={
-                            <Row xs={1} sm={2} md={3} lg={4} xl={5} className="g-4">
-                                {renderMovieList()}
-                            </Row>
-                        }
-                    />
-                )}
-                {user && (
-                    <Route
-                        path="/movies/:title"
-                        element={<MovieView movies={movies} />}
-                    />
-                )}
-                {user && (
-                    <Route
-                        path="/profile"
-                        element={
-                            <ProfileView
-                                user={user}
-                                movies={movies}
-                                favorites={favorites}
-                                onUserUpdate={handleUserUpdate}
-                                onUserDeregister={handleUserDeregister}
-                                onAddToFavorites={handleAddToFavorites}
-                            />
-                        }
-                    />
-                )}
-                <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-        </Router>
-    );
+            <Route
+              path="/login"
+              element={
+                user ? (
+                  <Navigate to="/" />
+                ) : (
+                  <LoginView onLoggedIn={handleLoggedIn} />
+                )
+              }
+            />
+            {/* Route for MovieView */}
+            <Route
+              path="/movies/:movieId"
+              element={
+                user ? (
+                  <MovieView movies={movies} />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/movies"
+              element={
+                user ? (
+                  movies.length === 0 ? (
+                    <Col>The list is empty!</Col>
+                  ) : (
+                    movies.map((movie) => (
+                      <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
+                        <MovieCard
+                          key={movie._id}
+                          movie={movie}
+                          username={user.username}
+                          authToken={token}
+                          token={token}
+                          favorites={favorites}
+                          updateFavorites={updateFavorites}
+                        />
+                      </Col>
+                    ))
+                  )
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                user ? (
+                  <Col>
+                    <Row>
+                      <ProfileView
+                        user={user}
+                        token={token}
+                        setUser={setUser}
+                        onDelete={handleLoggedOut}
+                        movies={movies}
+                        favorites={favorites}
+                        updateFavorites={updateFavorites}
+                      />
+                    </Row>
+                  </Col>
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+            <Route
+              path="/"
+              element={<Navigate to={user ? "/movies" : "/login"} replace />}
+            />
+          </Routes>
+        </Row>
+      </Container>
+    </BrowserRouter>
+  );
 };
