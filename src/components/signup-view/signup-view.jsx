@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Form, Button, Container, Row, Col } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faLock,
+  faEnvelope,
+  faCalendar,
+} from "@fortawesome/free-solid-svg-icons";
 import "./signup-view.scss";
 
 export const SignupView = () => {
@@ -11,104 +17,96 @@ export const SignupView = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const data = {
-      username: username,
-      password: password,
-      email: email,
-      birthday: birthday,
-    };
-
-    fetch("https://moviesflix-hub-fca46ebf9888.herokuapp.com/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response from server:", data);
-
-        if (data.username && data.email) {
-          alert("Signup successful");
-          navigate("/login");
-        } else {
-          throw new Error("Signup failed");
+    try {
+      const response = await fetch(
+        "https://moviesflix-hub-fca46ebf9888.herokuapp.com/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password, email, birthday }),
         }
-      })
-      .catch((error) => {
-        setError(error.message);
-      });
+      );
+
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        const data = await response.json();
+        setError(data.message || "An error occurred during signup");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
-    <Container className="signup-view">
-      <Row className="justify-content-md-center">
-        <Col md={6}>
-          <div className="signup-container">
-            <h2 className="signup-heading">Create Account</h2>
-            <Form onSubmit={handleSubmit}>
-              <Form.Group controlId="formUsername">
-                <Form.Control
-                  type="text"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+    <div className="signup-view">
+      <div className="signup-container">
+        <h1 className="signup-heading">Join myFlix-Hub</h1>
+        <form onSubmit={handleSubmit}>
+          {["username", "password", "email"].map((field) => (
+            <div key={field} className="form-group">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <FontAwesomeIcon
+                    icon={
+                      field === "username"
+                        ? faUser
+                        : field === "password"
+                        ? faLock
+                        : faEnvelope
+                    }
+                  />
+                </span>
+                <input
+                  type={
+                    field === "password"
+                      ? "password"
+                      : field === "email"
+                      ? "email"
+                      : "text"
+                  }
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={eval(field)}
+                  onChange={(e) =>
+                    eval(
+                      `set${field.charAt(0).toUpperCase() + field.slice(1)}`
+                    )(e.target.value)
+                  }
                   required
                   className="signup-input"
                 />
-              </Form.Group>
-
-              <Form.Group controlId="formPassword">
-                <Form.Control
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="signup-input"
-                />
-              </Form.Group>
-
-              <Form.Group controlId="formEmail">
-                <Form.Control
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="signup-input"
-                />
-              </Form.Group>
-
-              <Form.Group controlId="formBirthday">
-                <Form.Control
-                  type="date"
-                  value={birthday}
-                  onChange={(e) => setBirthday(e.target.value)}
-                  required
-                  className="signup-input"
-                />
-              </Form.Group>
-
-              {error && <div className="signup-error">{error}</div>}
-
-              <Button variant="primary" type="submit" className="signup-button">
-                Sign Up
-              </Button>
-            </Form>
-
-            <Link to="/login">
-              <Button variant="link" className="signup-link">
-                Already have an account? Login here.
-              </Button>
-            </Link>
+              </div>
+            </div>
+          ))}
+          <div className="form-group">
+            <div className="input-group">
+              <span className="input-group-text">
+                <FontAwesomeIcon icon={faCalendar} />
+              </span>
+              <input
+                type="date"
+                value={birthday}
+                onChange={(e) => setBirthday(e.target.value)}
+                required
+                className="signup-input"
+              />
+            </div>
           </div>
-        </Col>
-      </Row>
-    </Container>
+          {error && <div className="signup-error">{error}</div>}
+          <button type="submit" className="signup-button">
+            Create Account
+          </button>
+        </form>
+        <div>
+          <Link to="/login" className="signup-link">
+            Already have an account? Sign in
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 };
