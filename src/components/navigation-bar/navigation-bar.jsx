@@ -1,13 +1,12 @@
 import React from "react";
 import { Navbar, Container, Nav, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { SearchView } from "../search-view/search-view";
 import "./navigation-bar.scss";
 
-export const NavigationBar = ({ user, onLoggedOut }) => {
+export const NavigationBar = ({ user, onLoggedOut, onSearch }) => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-      {" "}
-      {/* Added mb-4 for margin bottom */}
       <Container>
         <Navbar.Brand as={Link} to="/">
           MoviesFlix
@@ -46,6 +45,7 @@ export const NavigationBar = ({ user, onLoggedOut }) => {
               </>
             )}
           </Nav>
+          {user && <SearchView onSearch={onSearch} />}
         </Navbar.Collapse>
       </Container>
     </Navbar>

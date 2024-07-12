@@ -5,6 +5,8 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { SearchView } from "../search-view/search-view";
+
 import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
@@ -22,6 +24,7 @@ export const MainView = () => {
   const [token, setToken] = useState(storedToken || null);
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState([]);
 
   const updateFavorites = (newFavorites) => {
     setFavorites(newFavorites);
@@ -45,6 +48,13 @@ export const MainView = () => {
     setToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = movies.filter((movie) =>
+      movie.Title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredMovies(filtered);
   };
 
   useEffect(() => {
@@ -77,8 +87,13 @@ export const MainView = () => {
 
   return (
     <BrowserRouter>
-      <NavigationBar user={user} onLoggedOut={handleLoggedOut} />
+      <NavigationBar
+        user={user}
+        onLoggedOut={handleLoggedOut}
+        onSearch={handleSearch}
+      />
       <Container>
+        <SearchView onSearch={handleSearch} />
         <Row className="justify-content-md-center">
           <Routes>
             <Route
@@ -95,7 +110,6 @@ export const MainView = () => {
                 )
               }
             />
-            {/* Route for MovieView */}
             <Route
               path="/movies/:movieId"
               element={
@@ -110,22 +124,25 @@ export const MainView = () => {
               path="/movies"
               element={
                 user ? (
-                  movies.length === 0 ? (
+                  (filteredMovies.length > 0 ? filteredMovies : movies)
+                    .length === 0 ? (
                     <Col>The list is empty!</Col>
                   ) : (
-                    movies.map((movie) => (
-                      <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                        <MovieCard
-                          key={movie._id}
-                          movie={movie}
-                          username={user.username}
-                          authToken={token}
-                          token={token}
-                          favorites={favorites}
-                          updateFavorites={updateFavorites}
-                        />
-                      </Col>
-                    ))
+                    (filteredMovies.length > 0 ? filteredMovies : movies).map(
+                      (movie) => (
+                        <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
+                          <MovieCard
+                            key={movie._id}
+                            movie={movie}
+                            username={user.username}
+                            authToken={token}
+                            token={token}
+                            favorites={favorites}
+                            updateFavorites={updateFavorites}
+                          />
+                        </Col>
+                      )
+                    )
                   )
                 ) : (
                   <Navigate to="/login" replace />
