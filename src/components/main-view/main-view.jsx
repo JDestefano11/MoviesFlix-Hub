@@ -5,7 +5,6 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
-import { SearchView } from "../search-view/search-view";
 
 import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -93,7 +92,6 @@ export const MainView = () => {
         onSearch={handleSearch}
       />
       <Container>
-        <SearchView onSearch={handleSearch} />
         <Row className="justify-content-md-center">
           <Routes>
             <Route

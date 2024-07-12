@@ -1,5 +1,5 @@
 import React from "react";
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Navbar, Container, Nav, Button, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { SearchView } from "../search-view/search-view";
 import "./navigation-bar.scss";
@@ -7,7 +7,7 @@ import "./navigation-bar.scss";
 export const NavigationBar = ({ user, onLoggedOut, onSearch }) => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
-      <Container>
+      <Container fluid>
         <Navbar.Brand as={Link} to="/">
           MoviesFlix
         </Navbar.Brand>
@@ -21,31 +21,47 @@ export const NavigationBar = ({ user, onLoggedOut, onSearch }) => {
               Movies
             </Nav.Link>
           </Nav>
-          <Nav className="justify-content-end">
+          {user && (
+            <Form className="d-flex mb-2 mb-lg-0 me-lg-3">
+              <SearchView onSearch={onSearch} />
+            </Form>
+          )}
+          <Nav className="flex-row justify-content-center justify-content-lg-end">
             {!user ? (
-              <Nav.Link as={Link} to="/login">
-                <Button variant="outline-info">Login</Button>
-              </Nav.Link>
+              <Nav.Item>
+                <Button
+                  as={Link}
+                  to="/login"
+                  variant="outline-info"
+                  className="w-100 mb-2 mb-lg-0"
+                >
+                  Login
+                </Button>
+              </Nav.Item>
             ) : (
               <>
-                <Nav.Link as={Link} to="/profile">
-                  <Button variant="outline-info">Profile</Button>
-                </Nav.Link>
-                <Button
-                  variant="outline-info"
-                  onClick={onLoggedOut}
-                  style={{
-                    padding: "0.375rem 0.75rem",
-                    minWidth: "7rem",
-                    textAlign: "center",
-                  }}
-                >
-                  Logout
-                </Button>
+                <Nav.Item className="me-2 mb-2 mb-lg-0">
+                  <Button
+                    as={Link}
+                    to="/profile"
+                    variant="outline-info"
+                    className="w-100"
+                  >
+                    Profile
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="outline-danger"
+                    onClick={onLoggedOut}
+                    className="w-100"
+                  >
+                    Logout
+                  </Button>
+                </Nav.Item>
               </>
             )}
           </Nav>
-          {user && <SearchView onSearch={onSearch} />}
         </Navbar.Collapse>
       </Container>
     </Navbar>
