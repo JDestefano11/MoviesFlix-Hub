@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Alert,
+  Card,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { MovieCard } from "../movie-card/movie-card";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faEnvelope,
+  faCalendar,
+  faLock,
+  faFilm,
+} from "@fortawesome/free-solid-svg-icons";
+import "./profile-view.scss";
 
 export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   const [username, setUsername] = useState(user.username);
@@ -13,9 +30,6 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("User:", user);
-    console.log("Favorite Movies:", favoriteMovies);
-
     if (user && user.favoriteMovies) {
       const fetchFavoriteMovies = async () => {
         try {
@@ -30,7 +44,6 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
             user.favoriteMovies.includes(movie._id)
           );
           setFavoriteMovies(favoriteMoviesList);
-          console.log("Updated favorite movies:", favoriteMoviesList);
         } catch (error) {
           console.error("Error fetching favorite movies:", error);
         }
@@ -55,14 +68,14 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
           setUser(null);
           localStorage.removeItem("user");
           localStorage.removeItem("token");
-          alert("Your account has been deleted");
+          setFeedbackMessage("Your account has been deleted");
           onLoggedOut();
         } else {
           throw new Error("Failed to delete account");
         }
       })
       .catch((error) => {
-        alert("Something went wrong: " + error.message);
+        setFeedbackMessage("Error: " + error.message);
       });
   };
 
@@ -74,7 +87,7 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
       birthday === user.birthday.split("T")[0] &&
       !password
     ) {
-      alert("No changes detected in the profile.");
+      setFeedbackMessage("No changes detected in the profile.");
       return;
     }
 
@@ -117,7 +130,6 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   };
 
   const renderFavoriteMovies = () => {
-    console.log("Rendering favorite movies:", favoriteMovies);
     if (!favoriteMovies || favoriteMovies.length === 0) {
       return <div>No favorite movies added.</div>;
     }
@@ -136,104 +148,131 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   };
 
   return (
-    <Container>
+    <Container className="profile-view">
       <Row>
         <Col md={8}>
-          <h2>Update Profile</h2>
+          <Card className="mb-4">
+            <Card.Header as="h2">
+              <FontAwesomeIcon icon={faUser} /> Update Profile
+            </Card.Header>
+            <Card.Body>
+              {feedbackMessage && (
+                <Alert variant="info">{feedbackMessage}</Alert>
+              )}
+              <Form onSubmit={handleUpdate}>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="formUpdateUsername"
+                >
+                  <Form.Label column sm={2}>
+                    <FontAwesomeIcon icon={faUser} /> Username
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Form.Control
+                      type="text"
+                      value={username}
+                      readOnly
+                      className="username-display"
+                    />
+                  </Col>
+                </Form.Group>
 
-          {feedbackMessage && <Alert variant="info">{feedbackMessage}</Alert>}
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="formUpdatePassword"
+                >
+                  <Form.Label column sm={2}>
+                    <FontAwesomeIcon icon={faLock} /> Password
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Form.Control
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      minLength="4"
+                    />
+                  </Col>
+                </Form.Group>
 
-          <Form onSubmit={handleUpdate}>
-            <Form.Group
-              as={Row}
-              className="mb-3"
-              controlId="formUpdateUsername"
-            >
-              <Form.Label column sm={2}>
-                Username
-              </Form.Label>
-              <Col sm={10}>
-                <div>
-                  <strong>{username}</strong>
-                </div>
-              </Col>
-            </Form.Group>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="formUpdateEmail"
+                >
+                  <Form.Label column sm={2}>
+                    <FontAwesomeIcon icon={faEnvelope} /> Email
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Form.Control
+                      type="email"
+                      placeholder="Enter email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </Col>
+                </Form.Group>
 
-            <Form.Group
-              as={Row}
-              className="mb-2"
-              controlId="formUpdatePassword"
-            >
-              <Form.Label column sm={2}>
-                Password
-              </Form.Label>
-              <Col sm={10}>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  minLength="4"
-                />
-              </Col>
-            </Form.Group>
+                <Form.Group
+                  as={Row}
+                  className="mb-3"
+                  controlId="formUpdateBirthday"
+                >
+                  <Form.Label column sm={2}>
+                    <FontAwesomeIcon icon={faCalendar} /> Birthday
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Form.Control
+                      type="date"
+                      value={birthday}
+                      onChange={(e) => setBirthday(e.target.value)}
+                    />
+                  </Col>
+                </Form.Group>
 
-            <Form.Group as={Row} className="mb-3" controlId="formUpdateEmail">
-              <Form.Label column sm={2}>
-                Email
-              </Form.Label>
-              <Col sm={10}>
-                <Form.Control
-                  type="email"
-                  placeholder="Enter email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </Col>
-            </Form.Group>
+                <Button type="submit" className="w-100 mb-3 update-button">
+                  Update Profile
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
 
-            <Form.Group
-              as={Row}
-              className="mb-3"
-              controlId="formUpdateBirthday"
-            >
-              <Form.Label column sm={2}>
-                Birthday
-              </Form.Label>
-              <Col sm={10}>
-                <Form.Control
-                  type="date"
-                  value={birthday}
-                  onChange={(e) => setBirthday(e.target.value)}
-                />
-              </Col>
-            </Form.Group>
-
-            <Button type="submit" className="w-100 mb-3">
-              Update Profile
-            </Button>
-          </Form>
-
-          <Button
-            variant="danger"
-            className="w-100 mb-3"
-            onClick={() => {
-              if (
-                window.confirm("Are you sure you want to delete your account?")
-              ) {
-                handleDelete();
-              }
-            }}
-          >
-            Delete Account
-          </Button>
+          <Card className="mb-4">
+            <Card.Body>
+              <Button
+                variant="danger"
+                className="w-100 delete-button"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      "Are you sure you want to delete your account?"
+                    )
+                  ) {
+                    handleDelete();
+                  }
+                }}
+              >
+                Delete Account
+              </Button>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
 
       <Row className="mt-4">
         <Col>
-          <h3>Favorite Movies</h3>
-          {favoriteMovies.length > 0 && <Row>{renderFavoriteMovies()}</Row>}
+          <Card>
+            <Card.Header as="h3">
+              <FontAwesomeIcon icon={faFilm} /> Favorite Movies
+            </Card.Header>
+            <Card.Body>
+              <Row xs={1} md={2} lg={3} className="g-4">
+                {renderFavoriteMovies()}
+              </Row>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </Container>
