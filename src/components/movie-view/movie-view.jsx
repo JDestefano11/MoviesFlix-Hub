@@ -1,8 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { SimilarMoviesView } from "../similar-movies/similar-movies";
 
-export const MovieView = ({ movies }) => {
+export const MovieView = ({ movies, user, token }) => {
   const { movieId } = useParams();
   const navigate = useNavigate();
 
@@ -14,25 +15,49 @@ export const MovieView = ({ movies }) => {
 
   return (
     <div className="movie-view">
+      <style>
+        {`
+          .movie-view {
+            color: #ffffff;
+          }
+          .movie-view h2 {
+            color: #ffffff;
+          }
+          .movie-view p {
+            color: #ffffff;
+          }
+          .movie-view strong {
+            color: #e2b400;
+          }
+        `}
+      </style>
       <Container>
-        <Row className="justify-content-center">
-          <Col md={8} className="text-center">
+        <Row className="align-items-center">
+          <Col
+            xs={12}
+            md={5}
+            lg={5}
+            className="text-center text-md-start mb-4 mb-md-0"
+          >
             <img
               src={movie.ImageUrl}
               alt={movie.Title}
-              className="movie-poster"
+              className="movie-poster img-fluid"
+              style={{
+                maxHeight: "600px",
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
             />
           </Col>
-        </Row>
-        <Row className="justify-content-center">
-          <Col md={8} className="text-center">
+          <Col xs={12} md={7} lg={7}>
             <div className="movie-details">
-              <h2>{movie.Title}</h2>
+              <h2 className="mb-3">{movie.Title}</h2>
               <p>
                 <strong>Description:</strong> {movie.Description}
               </p>
               {movie.Genre && (
-                <div>
+                <>
                   <p>
                     <strong>Genre:</strong> {movie.Genre.Name}
                   </p>
@@ -40,10 +65,10 @@ export const MovieView = ({ movies }) => {
                     <strong>Genre Description:</strong>{" "}
                     {movie.Genre.Description}
                   </p>
-                </div>
+                </>
               )}
               {movie.Director && (
-                <div>
+                <>
                   <p>
                     <strong>Director:</strong> {movie.Director.Name}
                   </p>
@@ -59,16 +84,53 @@ export const MovieView = ({ movies }) => {
                     <strong>Director's Birthplace:</strong>{" "}
                     {movie.Director.BirthPlace}
                   </p>
-                </div>
+                </>
               )}
+              <Button
+                variant="primary"
+                className="back-button mt-4"
+                onClick={() => navigate("/movies")}
+                style={{
+                  backgroundColor: "#FFD700",
+                  color: "#1A1A1A",
+                  border: "none",
+                  padding: "10px 20px",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  borderRadius: "5rem",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+                  transition: "all 0.3s ease",
+                  width: "100%",
+                  maxWidth: "13rem",
+                  height: "3rem",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = "#E2B400";
+                  e.target.style.transform = "translateY(-3px)";
+                  e.target.style.boxShadow = "0 6px 12px rgba(0, 0, 0, 0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = "#FFD700";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.2)";
+                }}
+              >
+                Back to Movies
+              </Button>
             </div>
-            <Button
-              variant="secondary"
-              className="back-button"
-              onClick={() => navigate("/movies")}
-            >
-              Back to Movies
-            </Button>
+          </Col>
+        </Row>
+        <Row className="mt-5 pt-5">
+          <Col>
+            <SimilarMoviesView
+              currentMovie={movie}
+              movies={movies}
+              username={user?.username}
+              authToken={token}
+            />
           </Col>
         </Row>
       </Container>

@@ -1,96 +1,109 @@
-$primary-color: #1A1A1A;
-$accent-color: #FFD700;
-$button-hover-color: #E2B400;
+$primary-color: #1a1a1a;
+$accent-color: #ffd700;
+$button-hover-color: #e2b400;
 
 .movie-card {
-    border: none;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-    margin: 20px;
-    cursor: pointer;
+  background-color: $primary-color;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
+  margin: 20px;
+
+  &:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background-color: #2a2a2a;
+  }
+
+  .card-img-top {
+    object-fit: cover;
+    height: 300px;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    color: #f0f0f0;
+  }
+
+  .card-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+    color: $accent-color;
+  }
+
+  .card-text {
+    margin-bottom: 1rem;
+  }
+
+  .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.8em;
+    background-color: $accent-color;
+    color: $primary-color;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
 
     &:hover {
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      background-color: $button-hover-color;
     }
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-outline-danger {
+    color: #dc3545;
+    border-color: #dc3545;
+
+    &:hover {
+      color: #fff;
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+  }
+
+  @media (min-width: 320px) and (max-width: 479px) {
+    width: 100%;
+    margin: 10px 0;
 
     .card-img-top {
-        object-fit: cover;
-        height: 300px;
+      height: 200px;
     }
 
     .card-body {
-        padding: 1.5rem;
+      padding: 1rem;
     }
 
     .card-title {
-        font-weight: bold;
-        margin-bottom: 1rem;
+      font-size: 1.1rem;
     }
 
     .card-text {
-        color: #555;
-        margin-bottom: 1rem;
+      font-size: 0.9rem;
     }
+  }
 
-    .movie-link {
-        text-decoration: none;
-        color: inherit;
+  @media (min-width: 480px) and (max-width: 767px) {
+    flex: 0 0 calc(50% - 20px);
+    max-width: calc(50% - 20px);
+  }
 
-        .movie-button {
-            color: $accent-color;
-            border: none;
-            font-weight: bold;
-            text-decoration: underline;
-            transition: color 0.3s ease;
+  @media (min-width: 768px) and (max-width: 991px) {
+    flex: 0 0 calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
+  }
 
-            &:hover {
-                color: darken($accent-color, 10%);
-            }
-        }
-    }
+  @media (min-width: 992px) and (max-width: 1199px) {
+    flex: 0 0 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+  }
 
-    .movie-button {
-        width: 100%;
-        margin-top: 1rem;
-        padding: 0.75rem 1.25rem;
-        font-size: 1rem;
-        border: 2px solid $accent-color;
-        background-color: transparent;
-        color: $accent-color;
-        font-weight: bold;
-        transition: background-color 0.3s ease, color 0.3s ease;
-
-        &:hover {
-            background-color: $accent-color;
-            color: $primary-color;
-        }
-
-        &.favorite {
-            background-color: $accent-color;
-            color: $primary-color;
-
-            &:hover {
-                background-color: darken($accent-color, 10%);
-            }
-        }
-    }
-
-    @media (max-width: 767px) {
-        .movie-card {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-    }
-
-    @media (min-width: 768px) and (max-width: 991px) {
-        .movie-card {
-            width: calc(50% - 40px);
-        }
-    }
-
-    @media (min-width: 992px) {
-        .movie-card {
-            width: calc(25% - 40px);
-        }
-    }
+  @media (min-width: 1200px) {
+    flex: 0 0 calc(20% - 20px);
+    max-width: calc(20% - 20px);
+  }
 }
