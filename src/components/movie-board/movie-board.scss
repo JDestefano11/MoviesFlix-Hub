@@ -1,0 +1,154 @@
+.movie-board {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  .movie-board-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.6) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .movie-board-title {
+    color: #ffd700;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    flex: 1;
+    font-weight: bold;
+  }
+
+  .movie-board-card-wrapper {
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 300px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
+    }
+  }
+
+  .movie-board-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    filter: blur(8px);
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    object-fit: cover;
+  }
+
+  &:hover .movie-board-backdrop {
+    filter: blur(5px);
+    opacity: 0.7;
+  }
+
+  .movie-board-countdown {
+    color: #e2b400;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 479px) {
+    max-width: 100%;
+    border-radius: 10px;
+
+    .movie-board-content {
+      padding: 20px;
+      flex-direction: column;
+    }
+
+    .movie-board-title {
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .movie-board-card-wrapper {
+      max-width: 100%;
+    }
+
+    .movie-board-countdown {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 480px) and (max-width: 767px) {
+    max-width: 100%;
+
+    .movie-board-content {
+      padding: 30px;
+    }
+
+    .movie-board-title {
+      font-size: 2.5rem;
+    }
+
+    .movie-board-countdown {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 991px) {
+    max-width: 750px;
+
+    .movie-board-title {
+      font-size: 2.75rem;
+    }
+
+    .movie-board-countdown {
+      font-size: 1.3rem;
+    }
+  }
+
+  @media (min-width: 992px) and (max-width: 1199px) {
+    max-width: 900px;
+
+    .movie-board-countdown {
+      font-size: 1.4rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    max-width: 800px;
+
+    .movie-board-countdown {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    max-width: 900px;
+  }
+}

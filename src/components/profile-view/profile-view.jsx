@@ -20,38 +20,20 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./profile-view.scss";
 
-export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
+export const ProfileView = ({
+  user,
+  token,
+  setUser,
+  onLoggedOut,
+  favorites,
+  updateFavorites,
+}) => {
   const [username, setUsername] = useState(user.username);
-  const [favoriteMovies, setFavoriteMovies] = useState([]);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState(user.email);
   const [birthday, setBirthday] = useState(user.birthday || new Date());
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user && user.favoriteMovies) {
-      const fetchFavoriteMovies = async () => {
-        try {
-          const response = await fetch(
-            "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movies",
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          const movies = await response.json();
-          const favoriteMoviesList = movies.filter((movie) =>
-            user.favoriteMovies.includes(movie._id)
-          );
-          setFavoriteMovies(favoriteMoviesList);
-        } catch (error) {
-          console.error("Error fetching favorite movies:", error);
-        }
-      };
-
-      fetchFavoriteMovies();
-    }
-  }, [user, token]);
 
   const handleDelete = () => {
     fetch(
@@ -130,18 +112,18 @@ export const ProfileView = ({ user, token, setUser, onLoggedOut }) => {
   };
 
   const renderFavoriteMovies = () => {
-    if (!favoriteMovies || favoriteMovies.length === 0) {
+    if (!favorites || favorites.length === 0) {
       return <div>No favorite movies added.</div>;
     }
 
-    return favoriteMovies.map((movie) => (
+    return favorites.map((movie) => (
       <Col key={movie._id} xs={12} sm={6} md={4} lg={3} className="mb-4">
         <MovieCard
           movie={movie}
           username={user.username}
           authToken={token}
-          favorites={favoriteMovies}
-          updateFavorites={setFavoriteMovies}
+          favorites={favorites}
+          updateFavorites={updateFavorites}
         />
       </Col>
     ));
