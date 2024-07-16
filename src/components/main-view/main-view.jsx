@@ -7,6 +7,7 @@ import { ProfileView } from "../profile-view/profile-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { MovieBoard } from "../movie-board/movie-board";
 import { GenreSection } from "../genre-section/genre-section";
+import { RecentlyViewedMovies } from "../recently-viewed/recently-viewed";
 
 import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -163,6 +164,11 @@ export const MainView = () => {
               user ? (
                 <>
                   {movieOfTheDay && <MovieBoard movie={movieOfTheDay} />}
+                  <RecentlyViewedMovies
+                    token={token}
+                    favorites={favorites}
+                    updateFavorites={updateFavorites}
+                  />
                   <div className="movie-list-container">
                     {Object.entries(
                       groupMoviesByGenre(

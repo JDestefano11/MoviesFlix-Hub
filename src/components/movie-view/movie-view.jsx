@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { SimilarMoviesView } from "../similar-movies/similar-movies";
+import { useEffect } from "react";
 
 export const MovieView = ({ movies, user, token }) => {
   const { movieId } = useParams();
@@ -12,6 +13,21 @@ export const MovieView = ({ movies, user, token }) => {
   if (!movie) {
     return <div>Loading...</div>;
   }
+
+  useEffect(() => {
+    // Get existing recently viewed movies from local storage
+    const recentlyViewed =
+      JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    // Add current movie to the list if it's not already there
+    if (!recentlyViewed.find((m) => m._id === movie._id)) {
+      const updatedRecentlyViewed = [movie, ...recentlyViewed].slice(0, 5); // Keep only the 5 most recent
+      localStorage.setItem(
+        "recentlyViewed",
+        JSON.stringify(updatedRecentlyViewed)
+      );
+    }
+  }, [movie]);
 
   return (
     <div className="movie-view">

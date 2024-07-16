@@ -78,47 +78,52 @@ export const MovieCard = ({
         <Card.Body className="d-flex flex-column">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <Card.Title className="mb-0">{movie.Title}</Card.Title>
-            {!isMovieOfTheDay &&
-              !isSimilarMovie && ( // Add !isSimilarMovie condition here
-                <Button
-                  variant={isFavorite ? "warning" : "outline-warning"}
-                  size="sm"
-                  onClick={handleFavoriteToggle}
-                  style={{
-                    backgroundColor: isFavorite ? "#FFD700" : "transparent",
-                    borderColor: "#FFD700",
-                    color: isFavorite ? "#1A1A1A" : "#FFD700",
-                    transition: "background-color 0.3s, color 0.3s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = isFavorite
-                      ? "#E2B400"
-                      : "#FFD700";
-                    e.target.style.color = "#1A1A1A";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = isFavorite
-                      ? "#FFD700"
-                      : "transparent";
-                    e.target.style.color = isFavorite ? "#1A1A1A" : "#FFD700";
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={isFavorite ? solidHeart : regularHeart}
-                  />
-                </Button>
-              )}
+            {!isMovieOfTheDay && !isSimilarMovie && (
+              <Button
+                variant={isFavorite ? "warning" : "outline-warning"}
+                size="sm"
+                onClick={handleFavoriteToggle}
+                style={{
+                  backgroundColor: isFavorite ? "#FFD700" : "transparent",
+                  borderColor: "#FFD700",
+                  color: isFavorite ? "#1A1A1A" : "#FFD700",
+                  transition: "background-color 0.3s, color 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = isFavorite
+                    ? "#E2B400"
+                    : "#FFD700";
+                  e.target.style.color = "#1A1A1A";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = isFavorite
+                    ? "#FFD700"
+                    : "transparent";
+                  e.target.style.color = isFavorite ? "#1A1A1A" : "#FFD700";
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={isFavorite ? solidHeart : regularHeart}
+                />
+              </Button>
+            )}
           </div>
           <div className="d-flex flex-wrap justify-content-start align-items-center mb-3">
-            <Badge bg="warning" text="dark" className="me-2 mb-2">
-              {movie.Year}
-            </Badge>
-            <Badge bg="warning" text="dark" className="me-2 mb-2">
-              {movie.Genre.Name}
-            </Badge>
-            <Badge bg="warning" text="dark" className="mb-2">
-              Rating: {movie.Rating}
-            </Badge>
+            {movie.Year && (
+              <Badge bg="warning" text="dark" className="me-2 mb-2">
+                {movie.Year}
+              </Badge>
+            )}
+            {movie.Genre && movie.Genre.Name && (
+              <Badge bg="warning" text="dark" className="me-2 mb-2">
+                {movie.Genre.Name}
+              </Badge>
+            )}
+            {movie.Rating && (
+              <Badge bg="warning" text="dark" className="mb-2">
+                Rating: {movie.Rating}
+              </Badge>
+            )}
           </div>
         </Card.Body>
       </Card>
