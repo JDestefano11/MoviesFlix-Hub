@@ -31,7 +31,7 @@ export const RecentlyViewedMovies = ({ token, favorites, updateFavorites }) => {
 
   return (
     <div className="recently-viewed mt-4">
-      <h2>Recently Viewed Movies</h2>
+      <h2 style={{ color: "#E2B400" }}>Recently Viewed Movies</h2>
       <Row>
         {validMovies.map((movie) => (
           <Col xs={12} sm={6} md={4} lg={3} key={movie._id} className="mb-4">
@@ -40,6 +40,7 @@ export const RecentlyViewedMovies = ({ token, favorites, updateFavorites }) => {
               token={token}
               favorites={favorites}
               updateFavorites={updateFavorites}
+              hideFavoriteButton={true}
             />
           </Col>
         ))}

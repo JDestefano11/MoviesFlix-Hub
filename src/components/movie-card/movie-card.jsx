@@ -13,6 +13,7 @@ export const MovieCard = ({
   updateFavorites,
   isMovieOfTheDay = false,
   isSimilarMovie = false,
+  hideFavoriteButton,
 }) => {
   const [isFavorite, setIsFavorite] = useState(
     Array.isArray(favorites) && favorites.some((fav) => fav._id === movie._id)
@@ -78,7 +79,7 @@ export const MovieCard = ({
         <Card.Body className="d-flex flex-column">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <Card.Title className="mb-0">{movie.Title}</Card.Title>
-            {!isMovieOfTheDay && !isSimilarMovie && (
+            {!isMovieOfTheDay && !isSimilarMovie && !hideFavoriteButton && (
               <Button
                 variant={isFavorite ? "warning" : "outline-warning"}
                 size="sm"
