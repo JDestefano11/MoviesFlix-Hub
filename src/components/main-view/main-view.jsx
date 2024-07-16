@@ -5,6 +5,8 @@ import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
 import { ProfileView } from "../profile-view/profile-view";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
+import { MovieBoard } from "../movie-board/movie-board";
+import { GenreSection } from "../genre-section/genre-section";
 
 import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -24,6 +26,7 @@ export const MainView = () => {
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
+  const [movieOfTheDay, setMovieOfTheDay] = useState(null);
 
   const updateFavorites = (newFavorites) => {
     setFavorites(newFavorites);
@@ -84,6 +87,44 @@ export const MainView = () => {
     fetchMovies();
   }, [token]);
 
+  // Movie of the day useEffect hook
+  useEffect(() => {
+    const fetchMovieOfTheDay = async () => {
+      try {
+        const response = await fetch(
+          "https://moviesflix-hub-fca46ebf9888.herokuapp.com/movie-of-the-day",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setMovieOfTheDay(data);
+        }
+      } catch (error) {
+        console.error("Error fetching Movie of the Day:", error);
+      }
+    };
+
+    if (token) {
+      fetchMovieOfTheDay();
+    }
+  }, [token]);
+
+  // Function to group movies by genre
+  const groupMoviesByGenre = (movies) => {
+    return movies.reduce((acc, movie) => {
+      const genreName = movie.Genre.Name;
+      if (!acc[genreName]) {
+        acc[genreName] = [];
+      }
+      acc[genreName].push(movie);
+      return acc;
+    }, {});
+  };
+
   return (
     <BrowserRouter>
       <NavigationBar
@@ -92,89 +133,85 @@ export const MainView = () => {
         onSearch={handleSearch}
       />
       <Container>
-        <Row className="justify-content-md-center">
-          <Routes>
-            <Route
-              path="/signup"
-              element={user ? <Navigate to="/" /> : <SignupView />}
-            />
-            <Route
-              path="/login"
-              element={
-                user ? (
-                  <Navigate to="/" />
-                ) : (
-                  <LoginView onLoggedIn={handleLoggedIn} />
-                )
-              }
-            />
-            <Route
-              path="/movies/:movieId"
-              element={
-                user ? (
-                  <MovieView movies={movies} />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route
-              path="/movies"
-              element={
-                user ? (
-                  (filteredMovies.length > 0 ? filteredMovies : movies)
-                    .length === 0 ? (
-                    <Col>The list is empty!</Col>
-                  ) : (
-                    (filteredMovies.length > 0 ? filteredMovies : movies).map(
-                      (movie) => (
-                        <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                          <MovieCard
-                            key={movie._id}
-                            movie={movie}
-                            username={user.username}
-                            authToken={token}
-                            token={token}
-                            favorites={favorites}
-                            updateFavorites={updateFavorites}
-                          />
-                        </Col>
+        <Routes>
+          <Route
+            path="/signup"
+            element={user ? <Navigate to="/" /> : <SignupView />}
+          />
+          <Route
+            path="/login"
+            element={
+              user ? (
+                <Navigate to="/" />
+              ) : (
+                <LoginView onLoggedIn={handleLoggedIn} />
+              )
+            }
+          />
+          <Route
+            path="/movies/:movieId"
+            element={
+              user ? (
+                <MovieView movies={movies} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          <Route
+            path="/movies"
+            element={
+              user ? (
+                <>
+                  {movieOfTheDay && <MovieBoard movie={movieOfTheDay} />}
+                  <div className="movie-list-container">
+                    {Object.entries(
+                      groupMoviesByGenre(
+                        filteredMovies.length > 0 ? filteredMovies : movies
                       )
-                    )
-                  )
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                user ? (
-                  <Col>
-                    <Row>
-                      <ProfileView
-                        user={user}
+                    ).map(([genreName, genreMovies]) => (
+                      <GenreSection
+                        key={genreName}
+                        genreName={genreName}
+                        movies={genreMovies}
+                        username={user.username}
                         token={token}
-                        setUser={setUser}
-                        onDelete={handleLoggedOut}
-                        movies={movies}
                         favorites={favorites}
                         updateFavorites={updateFavorites}
                       />
-                    </Row>
-                  </Col>
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              }
-            />
-            <Route
-              path="/"
-              element={<Navigate to={user ? "/movies" : "/login"} replace />}
-            />
-          </Routes>
-        </Row>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+
+          <Route
+            path="/profile"
+            element={
+              user ? (
+                <ProfileView
+                  user={user}
+                  token={token}
+                  setUser={setUser}
+                  onDelete={handleLoggedOut}
+                  movies={movies}
+                  favorites={favorites}
+                  updateFavorites={updateFavorites}
+                />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
+          <Route
+            path="/"
+            element={<Navigate to={user ? "/movies" : "/login"} replace />}
+          />
+        </Routes>
       </Container>
     </BrowserRouter>
   );

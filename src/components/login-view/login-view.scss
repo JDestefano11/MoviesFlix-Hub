@@ -1,14 +1,16 @@
-$primary-color: #1a1a1a;
-$secondary-color: #0d1b2a;
-$accent-color: #ffd700;
+$primary-color: #0d1b2a;
+$secondary-color: #f5f5f5;
+$accent-color: #cda434;
 $button-hover: #e2b400;
-$text-color: #f0f0f0;
+$text-light: #ffffff;
+$text-dark: #1a1a1a;
+$input-bg: #f5f5f5;
+$input-border: #2c3e50;
 
 .login-view {
   background-color: $primary-color;
   min-height: 100vh;
 }
-
 .login-background {
   backdrop-filter: blur(3px);
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -46,24 +48,24 @@ $text-color: #f0f0f0;
 }
 
 .login-subtitle {
-  color: $text-color;
+  color: $text-dark;
   font-size: 1rem;
 }
 
 .login-input {
-  background-color: lighten($primary-color, 10%);
-  border: 1px solid $accent-color;
-  color: $text-color;
+  background-color: $input-bg;
+  border: 1px solid $input-border;
+  color: $text-dark;
 
   &:focus {
-    background-color: lighten($primary-color, 15%);
+    background-color: lighten($input-bg, 5%);
     box-shadow: 0 0 0 0.2rem rgba($accent-color, 0.25);
   }
 }
 
 .login-input-icon {
   background-color: $accent-color;
-  color: $primary-color;
+  color: $text-light;
 }
 
 .login-button {
@@ -73,7 +75,7 @@ $text-color: #f0f0f0;
   margin: 0 auto;
   background-color: $accent-color;
   border: none;
-  color: $primary-color;
+  color: $text-light;
   font-weight: bold;
   padding: 0.75rem 1.5rem;
   transition: background-color 0.3s ease;
@@ -84,7 +86,7 @@ $text-color: #f0f0f0;
 }
 
 .signup-text {
-  color: $text-color;
+  color: $text-dark;
 }
 
 .signup-link {
