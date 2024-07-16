@@ -87,7 +87,6 @@ export const MainView = () => {
     fetchMovies();
   }, [token]);
 
-  // Movie of the day useEffect hook
   useEffect(() => {
     const fetchMovieOfTheDay = async () => {
       try {
@@ -113,7 +112,6 @@ export const MainView = () => {
     }
   }, [token]);
 
-  // Function to group movies by genre
   const groupMoviesByGenre = (movies) => {
     return movies.reduce((acc, movie) => {
       const genreName = movie.Genre.Name;
