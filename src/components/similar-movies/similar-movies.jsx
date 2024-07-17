@@ -25,7 +25,7 @@ export const SimilarMoviesView = ({
       <h3 className="mb-4">Similar Movies</h3>
       <Row>
         {similarMovies.map((movie) => (
-          <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
+          <Col key={movie._id}>
             <MovieCard
               movie={movie}
               username={username}
