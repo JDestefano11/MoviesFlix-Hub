@@ -31,11 +31,7 @@ export const SimilarMoviesView = ({
             sm={6}
             md={4}
             lg={3}
-            style={{
-              "@media (min-width: 329px) and (max-width: 479px)": {
-                marginBottom: "15px",
-              },
-            }}
+            className="mb-3 mb-sm-0"
           >
             <MovieCard
               movie={movie}
