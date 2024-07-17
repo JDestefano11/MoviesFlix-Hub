@@ -25,7 +25,18 @@ export const SimilarMoviesView = ({
       <h3 className="mb-4">Similar Movies</h3>
       <Row>
         {similarMovies.map((movie) => (
-          <Col key={movie._id}>
+          <Col
+            key={movie._id}
+            xs={12}
+            sm={6}
+            md={4}
+            lg={3}
+            style={{
+              "@media (min-width: 329px) and (max-width: 479px)": {
+                marginBottom: "15px",
+              },
+            }}
+          >
             <MovieCard
               movie={movie}
               username={username}
