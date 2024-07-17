@@ -1,0 +1,128 @@
+.similar-movies {
+  padding: 20px;
+}
+
+.similar-movies__title {
+  color: #e2b400;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.similar-movies__card-wrapper {
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+}
+
+.similar-movies__modal {
+  .modal-content {
+    border-radius: 8px;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+    color: #ffffff;
+  }
+
+  .modal-header {
+    background-color: rgba(26, 26, 26, 0.8);
+    border-bottom: none;
+    padding: 20px;
+
+    .close {
+      color: #ffffff;
+      opacity: 1;
+      transition: color 0.3s ease;
+
+      &:hover,
+      &:focus {
+        color: #e2b400;
+      }
+    }
+  }
+
+  .modal-title {
+    font-weight: 600;
+    color: #cda434;
+    font-size: 20px;
+  }
+
+  .modal-body {
+    padding: 30px;
+  }
+}
+
+.similar-movies__modal-image {
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.similar-movies__modal-details {
+  p {
+    margin-bottom: 10px;
+    strong {
+      color: #e2b400;
+    }
+  }
+}
+
+.similar-movies__modal-subtitle {
+  color: #ffd700;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.similar-movies__col {
+  margin-bottom: 1rem;
+}
+
+.similar-movies__modal .modal-header .btn-close {
+  color: #ffffff;
+  opacity: 1;
+  filter: invert(1) grayscale(100%) brightness(200%);
+  transition: filter 0.3s ease;
+}
+
+.similar-movies__modal .modal-header .btn-close:hover,
+.similar-movies__modal .modal-header .btn-close:focus {
+  filter: invert(1) grayscale(100%) brightness(200%) sepia(100%)
+    saturate(10000%) hue-rotate(20deg);
+}
+
+@media (min-width: 320px) and (max-width: 479px) {
+  .similar-movies__col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 767px) {
+  .similar-movies__col {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .similar-movies__col {
+    flex: 0 0 33%;
+    max-width: 33%;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+  .similar-movies__col {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .similar-movies__col {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
+}
