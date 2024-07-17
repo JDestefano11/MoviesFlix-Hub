@@ -31,7 +31,7 @@ export const SimilarMoviesView = ({
             sm={6}
             md={4}
             lg={3}
-            className="mb-3 mb-sm-0"
+            className="mb-3 mb-sm-0 safari-fix"
           >
             <MovieCard
               movie={movie}
