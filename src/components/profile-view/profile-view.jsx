@@ -84,7 +84,7 @@ export const ProfileView = ({
     }
 
     fetch(
-      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}`,
+      `https://moviesflix-hub-fca46ebf9888.herokuapp.com/users/${username}/update-username`,
       {
         method: "PUT",
         headers: {
