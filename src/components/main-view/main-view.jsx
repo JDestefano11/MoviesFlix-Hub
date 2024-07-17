@@ -9,7 +9,7 @@ import { MovieBoard } from "../movie-board/movie-board";
 import { GenreSection } from "../genre-section/genre-section";
 import { RecentlyViewedMovies } from "../recently-viewed/recently-viewed";
 
-import { Row, Col, Container, modal } from "react-bootstrap";
+import { Row, Col, Container } from "react-bootstrap";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 export const MainView = () => {
@@ -28,8 +28,6 @@ export const MainView = () => {
   const [favorites, setFavorites] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [movieOfTheDay, setMovieOfTheDay] = useState(null);
-  const [showSimilarModal, setShowSimilarModal] = useState(false);
-  const [similarMovies, setSimilarMovies] = useState([]);
 
   const updateFavorites = (newFavorites) => {
     setFavorites(newFavorites);
