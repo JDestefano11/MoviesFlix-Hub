@@ -28,7 +28,7 @@ export const MainView = () => {
   const [favorites, setFavorites] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [movieOfTheDay, setMovieOfTheDay] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const updateFavorites = (newFavorites) => {
     setFavorites(newFavorites);
@@ -45,6 +45,8 @@ export const MainView = () => {
   const handleLoggedIn = (user, token) => {
     setUser(user);
     setToken(token);
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("token", token);
   };
 
   const handleLoggedOut = () => {
@@ -59,6 +61,7 @@ export const MainView = () => {
       movie.Title.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredMovies(filtered);
+    setIsSearching(searchTerm.length > 0);
   };
 
   useEffect(() => {
@@ -158,40 +161,33 @@ export const MainView = () => {
               )
             }
           />
-
           <Route
             path="/movies"
             element={
               user ? (
                 <>
-                  {movieOfTheDay && !filteredMovies.length && (
+                  {!isSearching && movieOfTheDay && (
                     <MovieBoard movie={movieOfTheDay} />
                   )}
-                  {!filteredMovies.length && (
+                  {!isSearching && (
                     <RecentlyViewedMovies
                       token={token}
                       favorites={favorites}
                       updateFavorites={updateFavorites}
                     />
                   )}
-                  {filteredMovies.length > 0 && (
-                    <div className="search-results">
-                      <h2 style={{ color: "#e2b400" }}>Search Results</h2>
-                      <Row>
-                        {filteredMovies.map((movie) => (
-                          <Col key={movie._id} xs={12} sm={6} md={4} lg={3}>
-                            <MovieCard
-                              movie={movie}
-                              onMovieClick={(selectedMovie) => {}}
-                            />
-                          </Col>
-                        ))}
-                      </Row>
-                    </div>
-                  )}
-                  {!filteredMovies.length && (
-                    <div className="movie-list-container">
-                      {Object.entries(groupMoviesByGenre(movies)).map(
+                  <div className="movie-list-container">
+                    {isSearching ? (
+                      <GenreSection
+                        genreName="Search Results"
+                        movies={filteredMovies}
+                        username={user.username}
+                        token={token}
+                        favorites={favorites}
+                        updateFavorites={updateFavorites}
+                      />
+                    ) : (
+                      Object.entries(groupMoviesByGenre(movies)).map(
                         ([genreName, genreMovies]) => (
                           <GenreSection
                             key={genreName}
@@ -203,16 +199,15 @@ export const MainView = () => {
                             updateFavorites={updateFavorites}
                           />
                         )
-                      )}
-                    </div>
-                  )}
+                      )
+                    )}
+                  </div>
                 </>
               ) : (
                 <Navigate to="/login" replace />
               )
             }
           />
-
           <Route
             path="/profile"
             element={
