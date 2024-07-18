@@ -1,6 +1,6 @@
-# myFlix-Client
+# MoviesFilx-Hub
 
-myFlix-Client is a React-based client-side application for movie enthusiasts. It allows users to browse, search, and manage their favorite movies, as well as update their profile information.
+MoviesFlix-hub is a React-based client-side application for movie enthusiasts. It allows users to browse, search, and manage their favorite movies, as well as update their profile information.
 
 ## Features
 
