@@ -1,8 +1,8 @@
 [[redirects]]
   from = "/*"
-  to = "/"
+  to = "/index.html"
   status = 200
 
 [build]
-  command = "npx parcel build public/index.html"
+  command = "parcel build src/index.html --public-url /"
   publish = "dist"
