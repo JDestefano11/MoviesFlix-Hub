@@ -8,42 +8,37 @@ import {
   faCalendar,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { useNavigate } from "react-router-dom";
+
 export const SignupView = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [birthday, setBirthday] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    const data = {
-      Username: username,
-      Password: password,
-      Email: email,
-      Birthday: birthday,
-    };
-
     try {
       const response = await fetch(
-        "https://myflixdb-1234.herokuapp.com/users",
+        "https://moviesflix-hub-fca46ebf9888.herokuapp.com/users",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ username, password, email, birthday }),
         }
       );
-
-      if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
+      if (response.ok) {
+        navigate("/login");
+      } else {
+        const data = await response.json();
+        setError(data.message || "An error occurred during signup");
       }
-
-      const user = await response.json();
-      console.log("User registered successfully:", user);
     } catch (error) {
-      console.error("Error registering user:", error);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
