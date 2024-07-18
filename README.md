@@ -7,8 +7,9 @@
 4. [Requirements](#requirements)
 5. [Installation](#installation)
 6. [Running the Application](#running-the-application)
-7. [API Integration](#api-integration)
-8. [Contributing](#contributing)
+7. [Deployment](#deployment)
+8. [API Integration](#api-integration)
+9. [Contributing](#contributing)
 
 ## Overview
 
@@ -73,6 +74,15 @@ To install MoviesFlix-Hub, follow these steps:
 After installation, start the development server: npm start
 The application should now be running on `http://localhost:1234` (or the port specified in your configuration).
 
+
+## Deployment
+
+This application is deployed and can be accessed at:
+
+[https://moviesflix-hub.netlify.app](https://moviesflix-hub.netlify.app)
+
+Please note that this is not hosted on GitHub Pages, but on (https://moviesflix-hub.netlify.app)
+
 ## API Integration
 
 This frontend application interacts with a backend API. Below are the key endpoints used:
@@ -96,8 +106,4 @@ For more detailed information about these endpoints, please refer to the backend
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-
-
-
 
