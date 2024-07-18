@@ -17,3 +17,28 @@ MoviesFlix-hub is a React-based client-side application for movie enthusiasts. I
 - User authentication and authorization
 - Secure storage of user credentials
 - Visually appealing UI with Bootstrap and custom styling
+
+## Technologies Used
+
+### Frontend
+- React
+- React Bootstrap
+- Redux
+
+### Backend
+- Express.js
+- Node.js
+
+### Database
+- MongoDB
+
+### Authentication
+- Passport.js
+
+### Build Tools
+- Parcel
+
+### Version Control
+- Git
+
+
