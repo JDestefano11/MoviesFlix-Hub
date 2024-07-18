@@ -50,7 +50,7 @@ export const LoginView = ({ onLoggedIn }) => {
                 <p className="login-subtitle">Sign in to your account</p>
               </div>
               <div className="login-card-body">
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} method="POST">
                   <Form.Group controlId="formUsername" className="mb-4">
                     <div className="input-group">
                       <span className="input-group-text login-input-icon">
