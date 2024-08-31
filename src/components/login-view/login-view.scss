@@ -1,20 +1,19 @@
-$primary-color: #0d1b2a;
-$secondary-color: #f5f5f5;
-$accent-color: #cda434;
+$primary-color: #1a1a1a;
+$secondary-color: #f0f0f0;
+$accent-color: #ffcc00;
 $button-hover: #e2b400;
 $text-light: #ffffff;
 $text-dark: #1a1a1a;
-$input-bg: #f5f5f5;
-$input-border: #2c3e50;
+$input-bg: #ffffff;
+$input-border: #cccccc;
 
 .login-view {
   background-color: $primary-color;
   min-height: 100vh;
 }
+
 .login-background {
-  backdrop-filter: blur(3px);
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80");
+  backdrop-filter: blur(5px);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -22,18 +21,18 @@ $input-border: #2c3e50;
 }
 
 .login-card {
-  background-color: $secondary-color;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  background-color: rgba($secondary-color, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  padding: 2.5rem;
 
   &-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
   }
 
   &-body {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
   &-footer {
@@ -43,55 +42,67 @@ $input-border: #2c3e50;
 
 .login-title {
   color: $accent-color;
-  font-size: 2.5rem;
+  font-size: 2.8rem;
+  font-weight: bold;
   margin-bottom: 0.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .login-subtitle {
   color: $text-dark;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 .login-input {
   background-color: $input-bg;
   border: 1px solid $input-border;
   color: $text-dark;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
 
   &:focus {
-    background-color: lighten($input-bg, 5%);
+    background-color: $input-bg;
     box-shadow: 0 0 0 0.2rem rgba($accent-color, 0.25);
+    border-color: $accent-color;
   }
 }
 
 .login-input-icon {
   background-color: $accent-color;
-  color: $text-light;
+  color: $text-dark;
+  border: none;
 }
 
 .login-button {
   display: block;
   width: 100%;
-  max-width: 200px;
+  max-width: 220px;
   margin: 0 auto;
   background-color: $accent-color;
   border: none;
-  color: $text-light;
+  color: $text-dark;
   font-weight: bold;
-  padding: 0.75rem 1.5rem;
-  transition: background-color 0.3s ease;
+  padding: 0.85rem 1.5rem;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border-radius: 5px;
 
   &:hover {
     background-color: $button-hover;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 }
 
 .signup-text {
   color: $text-dark;
+  font-size: 1rem;
 }
 
 .signup-link {
   color: $accent-color;
   text-decoration: none;
+  font-weight: bold;
 
   &:hover {
     color: $button-hover;
