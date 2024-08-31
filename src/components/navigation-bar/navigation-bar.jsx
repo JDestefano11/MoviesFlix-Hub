@@ -1,28 +1,86 @@
-import React from "react";
-import "./navbar.css";
-import logo from "../assets/logo.png";
-import cart_icon from "../assets/cart_icon.png";
+import React, { useState } from "react";
+import { Navbar, Container, Nav, Button, Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { SearchView } from "../search-view/search-view";
+import "./navigation.scss";
 
-const Navbar = () => {
+export const NavigationBar = ({ user, onLoggedOut, onSearch }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleToggle = () => setExpanded((prevExpanded) => !prevExpanded);
+  const handleNavClick = () => setExpanded(false);
+
   return (
-    <div className="navbar">
-      <div className="nav-logo">
-        <img src={logo} alt="" />
-        <p>Name of Store here</p>
-      </div>
-      <ul className="nav-menu">
-        <li>Home</li>
-        <li>Men</li>
-        <li>Woman</li>
-        <li>Kids</li>
-      </ul>
-      <div className="nav-login-cart">
-        <button>Login</button>
-        <img src={cart_icon} alt="" />
-        <div className="nav-cart-count">1</div>
-      </div>
-    </div>
+    <Navbar
+      bg="dark"
+      variant="dark"
+      expand="lg"
+      expanded={expanded}
+      onToggle={handleToggle}
+      className="navbar-fullwidth"
+    >
+      <Container fluid className="navbar-container">
+        <Navbar.Brand as={Link} to="/" onClick={handleNavClick}>
+          MoviesFlix
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/" onClick={handleNavClick}>
+              Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/movies" onClick={handleNavClick}>
+              Movies
+            </Nav.Link>
+          </Nav>
+          {user && (
+            <Form className="d-flex mb-2 mb-lg-0 me-lg-3">
+              <SearchView onSearch={onSearch} />
+            </Form>
+          )}
+          <Nav className="ms-auto">
+            {!user ? (
+              <Nav.Item>
+                <Button
+                  as={Link}
+                  to="/login"
+                  variant="outline-info"
+                  className="nav-button"
+                  onClick={handleNavClick}
+                >
+                  Login
+                </Button>
+              </Nav.Item>
+            ) : (
+              <>
+                <Nav.Item className="me-2 mb-2 mb-lg-0">
+                  <Button
+                    as={Link}
+                    to="/profile"
+                    variant="outline-info"
+                    className="nav-button"
+                    onClick={handleNavClick}
+                  >
+                    Profile
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="outline-danger"
+                    onClick={() => {
+                      onLoggedOut();
+                      handleNavClick();
+                    }}
+                    className="nav-button"
+                  >
+                    Logout
+                  </Button>
+                </Nav.Item>
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
-
-export default Navbar;
