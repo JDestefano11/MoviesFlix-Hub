@@ -46,7 +46,7 @@ export const LoginView = ({ onLoggedIn }) => {
           <Col xs={12} sm={10} md={8} lg={6} xl={4}>
             <div className="login-card">
               <div className="login-card-header">
-                <h1 className="login-title">MyFlix-Hub</h1>
+                <h1 className="login-title">MoviesFlix-Hub</h1>
                 <p className="login-subtitle">Sign in to your account</p>
               </div>
               <div className="login-card-body">
